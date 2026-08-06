@@ -1,11 +1,16 @@
-# Core dependencies. Python >= 3.11 is required — every pin below declares
-# Requires-Python >= 3.11, and Python 3.9 additionally changes the results:
-# the anchor-assignment tie-break shifts and E1 drifts by ~0.02
-# (spearman 0.676 instead of 0.687). See KNOWN_ISSUES.md #2.
+# Python 3.11 — this is the ONLY version the published results were verified on.
 #
-# Verified working set (Python 3.11.15, macOS arm64, 2026-08-06): all 15
-# validation gates pass and the published E1/E2 values reproduce to 3 decimals.
-numpy>=2.4.6
-scipy>=1.17.1
-scikit-learn>=1.9.0
-matplotlib>=3.11.1
+# Versions are pinned exactly because the map is sensitive to the linear-algebra
+# stack: the sparse Gram product X @ X.T varies by ~5e-9 relative between BLAS
+# builds, which is enough to change the anchor assignment. See CORRECTIONS.md #2.
+#
+# Verified on Python 3.11.15, macOS arm64, 2026-08-06: all 15 validation gates
+# pass and code/verify_reference.py reproduces all 28 published metrics.
+#
+# Do not run this on Python 3.9. It completes and still passes all 15 gates, but
+# the anchor tie-break resolves differently and E1 drifts (Spearman 0.676
+# instead of 0.687).
+numpy==2.4.6
+scipy==1.17.1
+scikit-learn==1.9.0
+matplotlib==3.11.1

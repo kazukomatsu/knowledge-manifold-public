@@ -235,7 +235,7 @@
   "corpus_metadata.csv": "260df6e6eb742da1ee65b2cf9171663781ca8ca8a92e8c8b7092fe1f63668237",
   "results_metrics.csv": "d4f9a667ef77145831da6d7f36578e0f9407edb00481cf6d8cd1152a0784abfc",
   "geodesic_results.csv": "9f87344ded87461a585c1825e5c6c31115bb7c2c120a7a18759f2fafa57a7284",
-  "extraction_log.json": "c4a9b6e582c1269b0397b0e7931ffc9f1ed409b3f9f318fb5a1b851169ab767c"
+  "extraction_log.json": "4c58f71c42781fbd9db0cb32cd695c229402e029261547addbc8ff7278125efc"
  },
  "deviations_from_spec": [
   "入力は論文PDFではなくユーザー提供のmarkdown変換ファイル(ユーザー指示)",

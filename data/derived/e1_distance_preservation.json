@@ -5,13 +5,13 @@
  "pearson": 0.6609995544309979,
  "trustworthiness_k5": 0.8587608695652174,
  "continuity_k5": 0.8999782608695652,
- "knn_preservation_k5": 0.49200000000000016,
+ "knn_preservation_k5": 0.3879999999999999,
  "trustworthiness_k7": 0.8486035313001605,
  "continuity_k7": 0.8940288924558588,
- "knn_preservation_k7": 0.5042857142857143,
+ "knn_preservation_k7": 0.42714285714285727,
  "trustworthiness_k10": 0.8422485207100592,
  "continuity_k10": 0.8794319526627219,
- "knn_preservation_k10": 0.5129999999999998,
+ "knn_preservation_k10": 0.46299999999999997,
  "nn_dist_cv": 0.28383520833793,
- "peak_mem_mb": 417520.0
+ "peak_mem_mb": 417424.0
 }

@@ -8,24 +8,26 @@
 
 ## 0. 環境
 
-- Python **3.11 以上**(固定した依存がすべて `Requires-Python >= 3.11`)。
-  3.11.15 と 3.14.6 で動作確認済み。
-- 必要パッケージ: `requirements.txt`
+- **Python 3.11**(下限ではなくサポート対象そのもの)。3.11.15 で検証。
+- 必要パッケージ: `requirements.txt`(版を完全固定)
 - 任意: `requirements-optional.txt`(`umap-learn`。E10 の UMAP ベースライン比較にのみ使用。
   無ければ自動でスキップされる)
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
+python3.11 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 pip install -r requirements-optional.txt   # 任意
 ```
 
-**Python 3.9 では実行しないでください。** 15 ゲートは通りますが、アンカー割り当ての決着が
-変わり E1 がずれます(spearman 0.687 → 0.676)。理由は
-[`../KNOWN_ISSUES.md`](../KNOWN_ISSUES.md) の #2。
+**3.11 に限定しているのは、公開値の再現を端から端まで確認したのが 3.11.15 だけだからです。**
+マップは線形代数スタックに敏感で、sparse な `X @ X.T` が BLAS ビルド間で相対 5e-9 ずれるだけで
+アンカー割り当てが変わり得ます([`../CORRECTIONS.md`](../CORRECTIONS.md) の #2)。そのため
+依存の版も同梱成果物を生成したものに固定しています。新しい Python でも import と単体テストは
+通りますが、論文の数値が再現することは主張していません。また `umap-learn` は `numba` 依存の
+ため 3.14 ではビルドできません。
 
-`umap-learn` は `numba` 依存のため新しい Python では入らないことがあります(3.14 ではビルド
-失敗)。任意依存なのでコアのインストールとは分けてあります。
+**Python 3.9 では実行しないでください。** 15 ゲートは通りますが、アンカー割り当ての決着が
+変わり E1 がずれます(spearman 0.687 → 0.676)。
 
 ## 1. 入力の作成
 
@@ -104,12 +106,13 @@ python3 code/verify_reference.py
 `nearest_paper_*` を再計算し、`data/derived/` の参照 JSON と突き合わせます(28 指標)。
 恒等式と再現可能な範囲は [`../data/README.md`](../data/README.md) に書いてあります。
 
-参照値(v5.2、100 論文コーパス): Spearman 0.6868、kNN@7 0.5043、
+参照値(v5.2、100 論文コーパス): Spearman 0.6868、kNN@7 0.4271、
 LOO cosine 0.4663(global)/ 0.4708(adaptive)。
 
-**kNN 保存率の値については [`../KNOWN_ISSUES.md`](../KNOWN_ISSUES.md) の #1 を参照して
-ください。** 実装が k+1 近傍を k で割っているため公開値は過大です(k=7 で 0.504、正しくは
-0.427)。手法間の順位には影響しません。
+**kNN 保存率は初期稿から値が変わっています。** `knn_preservation` が k+1 近傍を k で割って
+いた不具合を修正したためで、k=7 は 0.504 → 0.427(k=5 は 0.492 → 0.388、k=10 は
+0.513 → 0.463)。手法間の順位は 5 手法すべて不変です。詳細と E10 比較表の全手法の新旧値は
+[`../CORRECTIONS.md`](../CORRECTIONS.md) の #1。
 
 ## 5. 図の出力
 
@@ -180,7 +183,7 @@ written    : evidence_point_-0.5_0.0.json
 なく語(`compton`)で渡るため、モデルが人名と誤認する取り違えが起きません。
 
 **座標と内容の対応は run に固定されたものです。** 環境が変わると同じ座標が別領域を指す
-不具合がありましたが修正済みです([`../KNOWN_ISSUES.md`](../KNOWN_ISSUES.md) #2)。ただし
+不具合がありましたが修正済みです([`../CORRECTIONS.md`](../CORRECTIONS.md) #2)。ただし
 修正後も自由点の座標には環境差が残る(最大 0.35)ため、座標を根拠にした議論をする場合は
 `requirements.txt` の環境を固定してください。
 

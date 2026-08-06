@@ -12,10 +12,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # >= 3.11 because every pinned dependency declares Requires-Python >= 3.11.
-        # 3.11 and 3.14 are verified locally; 3.12 and 3.13 interpolate.
-        # umap-learn is deliberately not installed here — see requirements-optional.txt.
-        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        # 3.11 only: it is the sole version the published results were verified
+        # on, and requirements.txt pins the exact stack that produced them.
+        # Newer Pythons are not claimed to reproduce the paper's numbers, and
+        # umap-learn cannot be built on 3.14 at all.
+        python-version: ["3.11"]
 
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +34,7 @@ jobs:
 
       - name: Report the resolved environment
         # The published numbers are sensitive to the linear-algebra stack, so
-        # record exactly what this job used. See KNOWN_ISSUES.md #2.
+        # record exactly what this job used. See CORRECTIONS.md #2.
         run: |
           python -c "import sys, numpy, scipy, sklearn; \
             print('python', sys.version); \

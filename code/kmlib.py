@@ -340,11 +340,19 @@ def trustworthiness_continuity(D_high, D_low, k=7):
     return 1 - norm * T, 1 - norm * C
 
 def knn_preservation(D_high, D_low, k=7):
+    """高次元・低次元の k 近傍集合の重なり率 (0〜1).
+
+    自己は対角に 1e9 を足すことで除外する。以前は自己除外を二重に書いていて
+    (`[:k+1]` と `- {i}` の併用)、マスク済みで自分は末尾に来るため `- {i}` が
+    無効化され、k+1 近傍を k で割っていた。同一 geometry で (k+1)/k を返す
+    (k=7 で 1.143) 状態だった。trustworthiness_continuity は上の `rl[i] < k`
+    により元から k 個ちょうどを見ていて、こちらの影響は受けていない。
+    """
     N = len(D_high)
     p = 0.0
     for i in range(N):
-        nh = set(np.argsort(D_high[i] + np.eye(N)[i] * 1e9)[:k + 1]) - {i}
-        nl = set(np.argsort(D_low[i] + np.eye(N)[i] * 1e9)[:k + 1]) - {i}
+        nh = set(np.argsort(D_high[i] + np.eye(N)[i] * 1e9)[:k])
+        nl = set(np.argsort(D_low[i] + np.eye(N)[i] * 1e9)[:k])
         p += len(nh & nl) / k
     return p / N
 

@@ -17,25 +17,33 @@ governed by `docs/verbalization_protocol.md`.
 This code accompanies a manuscript submitted to *Journal of Informetrics*. See
 [`CITATION.cff`](CITATION.cff).
 
-> **Read [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) before using the published
-> numbers.** Two defects were found while preparing this release: a fixed
-> reproducibility bug that used to mirror the map between environments, and an
-> open off-by-one in `knn_preservation` that inflates one reported metric.
+> **Read [`CORRECTIONS.md`](CORRECTIONS.md) before comparing against earlier
+> drafts.** Two defects found while preparing this release are fixed here. One
+> changes the reported kNN-preservation values (k=7: 0.504 → 0.427); the other
+> mirrors every figure left-to-right. No other published metric moves.
 
 ## Requirements
 
-Python **>= 3.11** (every pinned dependency declares `Requires-Python >= 3.11`).
-Verified locally on 3.11.15 and 3.14.6.
+**Python 3.11**, with the exact dependency versions in `requirements.txt`.
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
+python3.11 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 pip install -r requirements-optional.txt   # optional: adds the UMAP baseline
 ```
 
-Do not run this on Python 3.9. It still completes and still passes all 15
-validation gates, but the anchor assignment resolves differently and E1 drifts
-(Spearman 0.676 instead of 0.687). `KNOWN_ISSUES.md` #2 explains why.
+3.11 is the supported version, not a lower bound. The map is sensitive to the
+linear-algebra stack — the sparse Gram product `X @ X.T` varies by ~5e-9 relative
+between BLAS builds, which is enough to change the anchor assignment
+(`CORRECTIONS.md` #2) — so the dependency versions are pinned exactly to the
+ones that produced the shipped artifacts, and 3.11.15 is the only interpreter on
+which the published numbers were verified end to end. The code imports and its
+unit tests pass on newer Pythons, but reproduction of the paper's values is not
+claimed there, and `umap-learn` cannot be built on 3.14 at all.
+
+Do not run this on Python 3.9. It completes and still passes all 15 validation
+gates, but the anchor assignment resolves differently and E1 drifts (Spearman
+0.676 instead of 0.687).
 
 ## Reproducing the published results without the corpus
 
@@ -51,7 +59,7 @@ python3 code/verify_reference.py
 ```
 === E1 distance preservation ===
   spearman                                0.686767      0.686767   0.00e+00   PASS
-  knn_preservation_k7                     0.504286      0.504286   0.00e+00   PASS
+  knn_preservation_k7                     0.427143      0.427143   0.00e+00   PASS
   ...
 ALL 28 METRICS REPRODUCED
 ```
@@ -143,15 +151,15 @@ artifacts and log files stay traceable.
 pip install pytest && python3 -m pytest tests/ -v
 ```
 
-31 tests (30 pass, 1 `xfail(strict=True)` documenting `KNOWN_ISSUES.md` #1):
-unit coverage of the metric functions and the SPH kernel, regression tests
-pinning the anchor gauge against rounding noise, verification of the Gram-matrix
-identities that `verify_reference.py` relies on, and integration tests that the
-shipped artifacts still reproduce the shipped reference values and that no
-corpus-derived file has crept into `data/`.
+Unit coverage of the metric functions and the SPH kernel, regression tests for
+both corrections in `CORRECTIONS.md` (including one that perturbs the distance
+matrix by 1e-14 twelve times and asserts the anchor assignment never moves),
+verification of the Gram-matrix identities that `verify_reference.py` relies on,
+and integration tests that the shipped artifacts still reproduce the shipped
+reference values and that no corpus-derived file has crept into `data/`.
 
-CI runs the suite on Python 3.11–3.14 and additionally asserts that no
-corpus-derived file has been committed.
+CI runs the suite on Python 3.11 and additionally asserts that no corpus-derived
+file has been committed.
 
 ## License
 

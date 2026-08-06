@@ -9,7 +9,7 @@
  "methods": {
   "v5.0_constrained": {
    "spearman": 0.6868,
-   "knn_preservation_k7": 0.504,
+   "knn_preservation_k7": 0.427,
    "trustworthiness_k7": 0.849,
    "continuity_k7": 0.894,
    "sph_loo_cosine": 0.4708,
@@ -20,7 +20,7 @@
   },
   "PCA": {
    "spearman": 0.5151,
-   "knn_preservation_k7": 0.371,
+   "knn_preservation_k7": 0.301,
    "trustworthiness_k7": 0.794,
    "continuity_k7": 0.834,
    "sph_loo_cosine": 0.4496,
@@ -31,7 +31,7 @@
   },
   "MDS": {
    "spearman": 0.6343,
-   "knn_preservation_k7": 0.411,
+   "knn_preservation_k7": 0.361,
    "trustworthiness_k7": 0.817,
    "continuity_k7": 0.823,
    "sph_loo_cosine": 0.4636,
@@ -42,7 +42,7 @@
   },
   "tSNE": {
    "spearman": 0.6744,
-   "knn_preservation_k7": 0.704,
+   "knn_preservation_k7": 0.621,
    "trustworthiness_k7": 0.928,
    "continuity_k7": 0.918,
    "sph_loo_cosine": 0.5023,
@@ -53,7 +53,7 @@
   },
   "UMAP": {
    "spearman": 0.6067,
-   "knn_preservation_k7": 0.676,
+   "knn_preservation_k7": 0.587,
    "trustworthiness_k7": 0.91,
    "continuity_k7": 0.933,
    "sph_loo_cosine": 0.4927,
@@ -64,5 +64,5 @@
   }
  },
  "umap_status": "近傍グラフベース",
- "elapsed_sec": 22.1
+ "elapsed_sec": 37.5
 }

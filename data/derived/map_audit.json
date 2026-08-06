@@ -129,5 +129,5 @@
  "anchor_assignment_tie_count": 8,
  "anchor_assignment_tie_break": "lexicographic min over doc indices within rel. tol 1e-09 (D4 gauge fixing)",
  "reg_override": null,
- "elapsed_sec": 5.1
+ "elapsed_sec": 5.3
 }

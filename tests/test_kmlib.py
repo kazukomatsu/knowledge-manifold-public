@@ -227,28 +227,41 @@ class TestMetrics:
         D = np.linalg.norm(P[:, None] - P[None], axis=2)
         assert normalized_stress(D, D) == pytest.approx(0.0, abs=1e-24)
 
-    def test_knn_preservation_current_behaviour_is_pinned(self):
-        """Pins the AS-SHIPPED behaviour so refactors cannot move published numbers.
+    def test_knn_preservation_is_one_for_identical_geometry(self):
+        """Regression test for CORRECTIONS.md #1.
 
-        NOTE: this value is (k+1)/k, not 1.0 — see KNOWN_ISSUES.md #1. The
-        function masks the self-distance to 1e9 AND takes [:k+1], so it compares
-        k+1 neighbours while dividing by k. The published knn_preservation
-        values were produced with this behaviour and are reproduced by it.
+        Before the fix the function excluded self twice (`[:k+1]` together with
+        `- {i}`, on top of the 1e9 diagonal mask), so it compared k+1 neighbours
+        while dividing by k and returned (k+1)/k here — 1.200 / 1.143 / 1.100
+        for k = 5 / 7 / 10.
         """
         rng = np.random.default_rng(7)
         P = rng.uniform(-1, 1, (25, 2))
         D = np.linalg.norm(P[:, None] - P[None], axis=2)
         for k in (5, 7, 10):
-            assert knn_preservation(D, D, k=k) == pytest.approx((k + 1) / k, abs=1e-12)
+            assert knn_preservation(D, D, k=k) == pytest.approx(1.0, abs=1e-12)
 
-    @pytest.mark.xfail(strict=True, reason="KNOWN_ISSUES.md #1: off-by-one, "
-                                          "not fixed because it would change published values")
-    def test_knn_preservation_should_be_one_for_identical_geometry(self):
-        """The mathematically correct behaviour. Fails until issue #1 is resolved."""
-        rng = np.random.default_rng(7)
-        P = rng.uniform(-1, 1, (25, 2))
-        D = np.linalg.norm(P[:, None] - P[None], axis=2)
-        assert knn_preservation(D, D, k=7) == pytest.approx(1.0, abs=1e-12)
+    def test_knn_preservation_never_exceeds_one(self):
+        """The property the old implementation violated: it is a fraction."""
+        rng = np.random.default_rng(11)
+        for _ in range(8):
+            A = rng.uniform(-1, 1, (30, 2))
+            B = rng.uniform(-1, 1, (30, 2))
+            DA = np.linalg.norm(A[:, None] - A[None], axis=2)
+            DB = np.linalg.norm(B[:, None] - B[None], axis=2)
+            for k in (5, 7, 10):
+                score = knn_preservation(DA, DB, k=k)
+                assert 0.0 <= score <= 1.0, (k, score)
+
+    def test_knn_preservation_counts_exactly_k_neighbours(self):
+        """Disjoint neighbourhoods must score 0, not a residue from an extra point."""
+        # Two clusters far apart: in D_high the neighbours are within-cluster,
+        # in D_low we reverse the ordering so the k-sets cannot coincide.
+        P = np.array([[i, 0.0] for i in range(10)])
+        D_high = np.linalg.norm(P[:, None] - P[None], axis=2)
+        D_low = np.linalg.norm(P[::-1][:, None] - P[::-1][None], axis=2)
+        score = knn_preservation(D_high, D_low, k=3)
+        assert 0.0 <= score <= 1.0
 
     def test_knn_preservation_is_symmetric_in_its_arguments(self):
         rng = np.random.default_rng(9)
