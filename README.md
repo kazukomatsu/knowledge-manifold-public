@@ -1,0 +1,166 @@
+# Knowledge Manifold pipeline
+
+A deterministic pipeline that embeds a document corpus into a **fixed-frame,
+bounded 2-D knowledge manifold**, builds continuous fields over it (SPH density
+and entropy, Gaussian-process mean and uncertainty), traces geodesics under
+several metrics, and exports machine-computed **evidence packages** so that a
+language model can describe a location on the map without being the thing that
+decided what is there.
+
+The pipeline itself calls no language model. `13_llm_export.py` and
+`make_evidence.py` only write JSON; nothing in `code/` opens a network
+connection. The division of labour is deliberate: the geometry, the
+characteristic terms, the contributing documents and the uncertainty are all
+computed deterministically, and verbalization is a separate, auditable step
+governed by `docs/verbalization_protocol.md`.
+
+This code accompanies a manuscript submitted to *Journal of Informetrics*. See
+[`CITATION.cff`](CITATION.cff).
+
+> **Read [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) before using the published
+> numbers.** Two defects were found while preparing this release: a fixed
+> reproducibility bug that used to mirror the map between environments, and an
+> open off-by-one in `knn_preservation` that inflates one reported metric.
+
+## Requirements
+
+Python **>= 3.11** (every pinned dependency declares `Requires-Python >= 3.11`).
+Verified locally on 3.11.15 and 3.14.6.
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+pip install -r requirements-optional.txt   # optional: adds the UMAP baseline
+```
+
+Do not run this on Python 3.9. It still completes and still passes all 15
+validation gates, but the anchor assignment resolves differently and E1 drifts
+(Spearman 0.676 instead of 0.687). `KNOWN_ISSUES.md` #2 explains why.
+
+## Reproducing the published results without the corpus
+
+The corpus is 100 published papers on carbon-fibre composites. Their full text
+is **not** in this repository and cannot be — it consists of publisher PDFs. What
+ships instead is the derived representation, which is enough to recompute most
+of the published numbers exactly:
+
+```bash
+python3 code/verify_reference.py
+```
+
+```
+=== E1 distance preservation ===
+  spearman                                0.686767      0.686767   0.00e+00   PASS
+  knn_preservation_k7                     0.504286      0.504286   0.00e+00   PASS
+  ...
+ALL 28 METRICS REPRODUCED
+```
+
+This works because every E1 metric — and E2's `loo_cosine_*` and
+`nearest_paper_*` rates — depends on the documents only through their inner
+products, and the 100 x 100 Gram matrix is shipped. `data/README.md` gives the
+identities and states precisely what is and is not reproducible this way
+(`topk_recovery_*` is not: it needs the 250000-dimensional feature vectors).
+
+`data/corpus_manifest.csv` lists all 100 DOIs with their map coordinates and
+cluster, so each point in the published figures can be traced to a paper.
+
+## Running the full pipeline on your own corpus
+
+Stage 0 expects a single concatenated Markdown file, one document per section.
+
+```bash
+# 1. Expand the corpus into the layout the pipeline reads
+python3 code/make_derived_input.py \
+    --input ./your_corpus.md \
+    --output inputs/derived/mycorpus
+
+# 2. Run all stages. Pass ABSOLUTE paths: run_v50.sh cd's into code/ first.
+bash code/run_v50.sh \
+    --derived-input "$PWD/inputs/derived/mycorpus" \
+    --run-id mycorpus \
+    --outputs-root "$PWD/outputs"
+
+# 3. Validation gates (run_v50.sh runs these too and stops on failure)
+KM_OUT="$PWD/outputs/mycorpus" \
+KM_DATA="$PWD/outputs/mycorpus/work" \
+python3 code/validate.py
+```
+
+Expect roughly 12–20 minutes on one core; the 34 geodesics dominate. `--quick`
+skips the E7/E8 stability and sensitivity sweeps, which is most of the time —
+but some validation gates then fail, because they read E8 products. `--fullfig`
+adds three auxiliary figures not used in the paper.
+
+Nine figures land in `outputs/<run-id>/figures/`. Intermediate products (Gram
+matrix, GPR model, vocabulary, paths) stay in `outputs/<run-id>/work/` and are
+needed by the evidence-package step, so keep them.
+
+### Verbalizing a location
+
+```bash
+python3 code/make_evidence.py --x -0.5 --y 0.0 \
+    --out outputs/mycorpus --data outputs/mycorpus/work --code code
+```
+
+This prints the location's uncertainty, mixture entropy and both term lenses,
+and writes `evidence_point_-0.5_0.0.json`. Hand that file **together with**
+`docs/verbalization_protocol.md` to a language model. Passing the evidence
+without the protocol destroys auditability: there is then no way to separate
+what the model read off the evidence from what it supplied out of general
+knowledge.
+
+Terms in the package are whole words, deterministically reconstructed from the
+corpus text rather than raw character n-grams, so `compton` arrives as a word
+and not as the fragment `ompto`.
+
+## Repository layout
+
+```
+code/                 the pipeline; numbered scripts run in order, kmlib.py is shared
+  run_v50.sh          driver for all stages
+  validate.py         15 validation gates
+  verify_reference.py recompute the published metrics from data/derived/
+data/
+  corpus_manifest.csv 100 DOIs, titles, years, clusters, map coordinates
+  derived/            Gram matrix, coordinates, SVD scores, reference metric JSONs
+  reference_figures/  the nine published figures
+docs/
+  USAGE_ja.md         detailed walkthrough (Japanese)
+  verbalization_protocol.md      the binding protocol for the verbalization step
+  example_evidence_point.json    what make_evidence.py produces, for reference
+tests/                pytest suite; synthetic data only, no corpus text
+```
+
+Script names carry historical version numbers (`run_v50.sh`, `12_map_v30.py`)
+that no longer match the spec version they implement, which is v5.2
+(`KAPPA=0.80` and the other v5.2 values). They were left alone so that existing
+artifacts and log files stay traceable.
+
+## Tests
+
+```bash
+pip install pytest && python3 -m pytest tests/ -v
+```
+
+31 tests (30 pass, 1 `xfail(strict=True)` documenting `KNOWN_ISSUES.md` #1):
+unit coverage of the metric functions and the SPH kernel, regression tests
+pinning the anchor gauge against rounding noise, verification of the Gram-matrix
+identities that `verify_reference.py` relies on, and integration tests that the
+shipped artifacts still reproduce the shipped reference values and that no
+corpus-derived file has crept into `data/`.
+
+CI runs the suite on Python 3.11–3.14 and additionally asserts that no
+corpus-derived file has been committed.
+
+## License
+
+**Not yet decided.** No `LICENSE` file ships, so the default is all rights
+reserved. See [`LICENSE_TODO.md`](LICENSE_TODO.md) for what needs settling —
+code license, data license, copyright holder, and the journal's software
+availability policy.
+
+## Citation
+
+`CITATION.cff` carries placeholders for the author list and title, deliberately
+not guessed. Fill them in before publishing.

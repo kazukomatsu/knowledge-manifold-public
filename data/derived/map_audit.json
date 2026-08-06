@@ -1,0 +1,133 @@
+{
+ "tag": "main",
+ "N": 100,
+ "subset": null,
+ "spec_basis": "v3.0 \u00a72.2/2.3/2.4/2.5 exact definitions + v3.1 central anchor + v5.0 \u00a73.3 alpha(perimeter-only)",
+ "post_optimization_global_scaling": false,
+ "anchor_coordinates_fixed": true,
+ "kappa": 0.8,
+ "margin": 0.04,
+ "lambda_cover": 0.4,
+ "lambda_edge": 0.03,
+ "lambda_angle": 0.0,
+ "lambda_area": 0.0,
+ "lambda_rep": 0.1,
+ "lambda_center": 0.0,
+ "alpha": 1.9951915257945754,
+ "alpha_uses_central_anchor": false,
+ "alpha_if_central_included": 1.8619731138899578,
+ "alpha_definition": "mean(anchor 2D dist)/mean(anchor cos dist), perimeter pairs only",
+ "rep_selection": "greedy sum-of-pairwise-cos-distance maximization + local swap (v3.0 \u00a72.2.1; C(100,9) exhaustive infeasible)",
+ "free_point_max_radius_before_finalization": 1.1035759845754234,
+ "free_point_max_radius_after_finalization": 1.1035759845754234,
+ "anchor_positions_before_finalization": [
+  [
+   -1.0,
+   -1.0
+  ],
+  [
+   1.0,
+   -1.0
+  ],
+  [
+   1.0,
+   1.0
+  ],
+  [
+   -1.0,
+   1.0
+  ],
+  [
+   1.0,
+   0.0
+  ],
+  [
+   -1.0,
+   0.0
+  ],
+  [
+   0.0,
+   1.0
+  ],
+  [
+   0.0,
+   -1.0
+  ],
+  [
+   0.0,
+   0.0
+  ]
+ ],
+ "anchor_positions_after_finalization": [
+  [
+   -1.0,
+   -1.0
+  ],
+  [
+   1.0,
+   -1.0
+  ],
+  [
+   1.0,
+   1.0
+  ],
+  [
+   -1.0,
+   1.0
+  ],
+  [
+   1.0,
+   0.0
+  ],
+  [
+   -1.0,
+   0.0
+  ],
+  [
+   0.0,
+   1.0
+  ],
+  [
+   0.0,
+   -1.0
+  ],
+  [
+   0.0,
+   0.0
+  ]
+ ],
+ "optimizer": "scipy L-BFGS-B (hard box bounds; maxiter=2000, ftol=1e-12, gtol=1e-8, maxls=50)",
+ "optimizer_success": true,
+ "final_J": 0.16384504907121755,
+ "final_components": {
+  "stress": 0.14415963093363182,
+  "rep": 0.12799974684482296,
+  "center": 0.0013727690669624293,
+  "cover": 0.006698870357634366,
+  "edge": 0.14019651033498945,
+  "angle": 0.06834092670975976,
+  "area": 0.24140196411729217
+ },
+ "stress_kappa_scale": 0.14415963093363182,
+ "stress_kappa1_original_scale": 0.1762478666013958,
+ "lbfgs_total_iterations": 20,
+ "init": "classical MDS + sklearn SMACOF(n_init=1, random_state=0) + affine anchor alignment (deterministic)",
+ "random_seed": 0,
+ "mds_init_hash": "98350846ebee9e8746144112f63028acc8e97ff04235a10489dba7a138244506",
+ "n_perim_anchors": 8,
+ "anchor_docs": [
+  5,
+  44,
+  48,
+  84,
+  25,
+  51,
+  26,
+  94,
+  64
+ ],
+ "anchor_assignment_tie_count": 8,
+ "anchor_assignment_tie_break": "lexicographic min over doc indices within rel. tol 1e-09 (D4 gauge fixing)",
+ "reg_override": null,
+ "elapsed_sec": 5.1
+}

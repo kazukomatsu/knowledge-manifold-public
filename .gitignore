@@ -1,0 +1,28 @@
+# Pipeline products — regenerate with code/run_v50.sh, never commit
+outputs/
+inputs/
+
+# The full-text corpus must never be committed (publisher copyright).
+# See data/README.md.
+*.pdf
+100paper*.md
+**/texts/
+**/normalized_records/
+X_raw.npy
+vocab.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv*/
+*.egg-info/
+.pytest_cache/
+
+# OS / editor
+.DS_Store
+.clearance-rendered-preview-*/
+
+# Per-run evidence packages (generate with code/make_evidence.py).
+# docs/example_evidence_point.json is committed on purpose as a format example.
+evidence_point_*.json

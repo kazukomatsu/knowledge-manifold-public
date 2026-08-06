@@ -1,0 +1,251 @@
+{
+ "project": "Knowledge Manifold v5.0 analysis",
+ "spec": "2026_06_24 KnowledgeManifold_統合仕様_v5.0 (v4.0+v4.1統合)",
+ "date": "2026-07-06",
+ "N": 100,
+ "input": {
+  "source": "<derived-input>/papers100 (path redacted for publication; regenerate with code/make_derived_input.py)",
+  "source_sha256": "sha256:597c3f6dd8f6412d8f79227f7e65148566e8dd71e257f2ad67b248245c07ba59",
+  "derivation_id": "papers100_local",
+  "extraction": "git-repo derived input (texts/*.md) preprocessed per v5.0 §1.1",
+  "ocr": false,
+  "failed_pages": "n/a",
+  "source_basename": "papers100_local"
+ },
+ "environment": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "blas_lapack": "accelerate",
+  "platform": "macOS-26.6-arm64-arm-64bit",
+  "scipy": "1.17.1",
+  "sklearn": "1.9.0",
+  "note": "scipy/scikit-learn installed from user-provided wheels; spec-native implementations (sklearn TfidfVectorizer / scipy L-BFGS-B / scipy Delaunay / sklearn GPR n_restarts=10 / sklearn SMACOF)",
+  "matplotlib": "3.11.1"
+ },
+ "tfidf": {
+  "analyzer": "char_wb",
+  "ngram_range": [
+   4,
+   7
+  ],
+  "sublinear_tf": true,
+  "smooth_idf": true,
+  "max_features": 250000,
+  "min_df": 1,
+  "norm": null,
+  "vocab_size_full": 662050,
+  "vocab_size": 250000,
+  "epsilon_l1_smoothing": 1e-10,
+  "implementation": "sklearn TfidfVectorizer (analyzer=char_wb)"
+ },
+ "normalization": [
+  "l2",
+  "l1"
+ ],
+ "embedding": {
+  "dims": [
+   2
+  ],
+  "anchor": "perimeter8+central",
+  "random_seed_main": 0,
+  "seeds_sensitivity": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   20
+  ],
+  "optimizer": "scipy L-BFGS-B (hard box bounds; maxiter=2000, ftol=1e-12, gtol=1e-8, maxls=50)",
+  "lbfgs_total_iterations": 20,
+  "init": "classical MDS + sklearn SMACOF(n_init=1, random_state=0) + affine anchor alignment (deterministic)",
+  "objective": "J = E_stress + λ_rep E_rep + λ_center E_center + λ_cover E_cover + λ_edge E_edge + λ_angle E_angle + λ_area E_area",
+  "aux_term_definitions_note": "v3.0 §2.4 の厳密定義を使用 (E_rep: σ=0.35 Gauss / E_cover: 12×12格子[-0.92,0.92] / E_edge: 指数壁 β=0.10 / E_angle: θ_target=30° / E_area: Var[log area]; v3.0受領 2026-07-06)",
+  "alpha_definition": "mean(anchor 2D dist)/mean(anchor cos dist), perimeter pairs only",
+  "rep_selection": "greedy sum-of-pairwise-cos-distance maximization + local swap (v3.0 §2.2.1; C(100,9) exhaustive infeasible)",
+  "stress_kappa1_original_scale": 0.1762478666013958
+ },
+ "sph": {
+  "kernel": "cubic_spline_2d",
+  "h_mode_main": "global(max_dist/1.98)",
+  "h_modes_sensitivity": [
+   "global",
+   "fixed",
+   "knn_adaptive",
+   "density_adaptive"
+  ],
+  "finite_difference_delta": 0.001,
+  "delta_sensitivity": [
+   0.01,
+   0.005,
+   0.001,
+   0.0005,
+   0.0001
+  ]
+ },
+ "gpr": {
+  "kernel": "ConstantKernel*RBF(ard lx,ly)+WhiteKernel",
+  "n_restarts": 10,
+  "random_state": 0,
+  "svd_dim": 10,
+  "constant": 0.6046942952129233,
+  "length_scale_x": 0.42735472221753185,
+  "length_scale_y": 0.5490656279144513,
+  "white_noise": 0.18413625159100672,
+  "log_marginal_likelihood": -802.5183985422201,
+  "implementation": "custom NumPy GPR (sklearn unavailable); hyperparams by Nelder-Mead multi-restart"
+ },
+ "metrics": [
+  "euclidean",
+  "cosine",
+  "graph",
+  "sph",
+  "gpr_weighted",
+  "js",
+  "hellinger",
+  "fisher_rao"
+ ],
+ "lambda_values": [
+  0,
+  1,
+  4,
+  9
+ ],
+ "geodesic": {
+  "n_points": 31,
+  "n_inner": 29,
+  "multistart_amplitudes": [
+   0,
+   0.01,
+   -0.01,
+   0.03,
+   -0.03,
+   0.05,
+   -0.05
+  ],
+  "optimizer": "custom L-BFGS (two-loop, Armijo backtracking; scipy L-BFGS-B unavailable)",
+  "maxiter": 2000,
+  "ftol": 1e-12,
+  "gtol": 1e-08,
+  "maxls": 50,
+  "eps_singular": 1e-10,
+  "fr_top_feature_subset": 2000
+ },
+ "random_state_all": 0,
+ "post_optimization_global_scaling": false,
+ "anchor_coordinates_fixed": true,
+ "kappa": 0.8,
+ "margin": 0.04,
+ "lambda_cover": 0.4,
+ "lambda_edge": 0.03,
+ "lambda_angle": 0.0,
+ "lambda_area": 0.0,
+ "lambda_rep": 0.1,
+ "lambda_center": 0.0,
+ "alpha": 1.9951915257945754,
+ "alpha_uses_central_anchor": false,
+ "alpha_if_central_included": 1.8619731138899578,
+ "free_point_max_radius_before_finalization": 1.1035759845754234,
+ "free_point_max_radius_after_finalization": 1.1035759845754234,
+ "anchor_positions_before_finalization": [
+  [
+   -1.0,
+   -1.0
+  ],
+  [
+   1.0,
+   -1.0
+  ],
+  [
+   1.0,
+   1.0
+  ],
+  [
+   -1.0,
+   1.0
+  ],
+  [
+   1.0,
+   0.0
+  ],
+  [
+   -1.0,
+   0.0
+  ],
+  [
+   0.0,
+   1.0
+  ],
+  [
+   0.0,
+   -1.0
+  ],
+  [
+   0.0,
+   0.0
+  ]
+ ],
+ "anchor_positions_after_finalization": [
+  [
+   -1.0,
+   -1.0
+  ],
+  [
+   1.0,
+   -1.0
+  ],
+  [
+   1.0,
+   1.0
+  ],
+  [
+   -1.0,
+   1.0
+  ],
+  [
+   1.0,
+   0.0
+  ],
+  [
+   -1.0,
+   0.0
+  ],
+  [
+   0.0,
+   1.0
+  ],
+  [
+   0.0,
+   -1.0
+  ],
+  [
+   0.0,
+   0.0
+  ]
+ ],
+ "optimizer_success": true,
+ "final_J": 0.16384504907121755,
+ "random_seed": 0,
+ "mds_init_hash": "98350846ebee9e8746144112f63028acc8e97ff04235a10489dba7a138244506",
+ "scaling_autocheck": "PASS: before==after and anchors fixed",
+ "artifact_hashes": {
+  "coordinates_2d.csv": "87a25f8c5ec50d7475d1fc75fbea159556b86f32ad6a683f80467eb94c6e4c99",
+  "corpus_metadata.csv": "260df6e6eb742da1ee65b2cf9171663781ca8ca8a92e8c8b7092fe1f63668237",
+  "results_metrics.csv": "d4f9a667ef77145831da6d7f36578e0f9407edb00481cf6d8cd1152a0784abfc",
+  "geodesic_results.csv": "9f87344ded87461a585c1825e5c6c31115bb7c2c120a7a18759f2fafa57a7284",
+  "extraction_log.json": "c4a9b6e582c1269b0397b0e7931ffc9f1ed409b3f9f318fb5a1b851169ab767c"
+ },
+ "deviations_from_spec": [
+  "入力は論文PDFではなくユーザー提供のmarkdown変換ファイル(ユーザー指示)",
+  "TF-IDFはsklearn TfidfVectorizer、最適化はscipy L-BFGS-B、DelaunayはScipy、GPRはsklearn(n_restarts=10)、SMACOFはsklearn (ユーザー提供wheelsで導入)",
+  "マップ目的関数はv3.0 §2.2/2.3/2.4/2.5の厳密定義を使用。代表選定はC(100,9)全探索が非現実的なため貪欲+局所スワップ(v3.0が認める近似・方法記録済み)",
+  "Dijkstra・kmeans・trustworthiness等の軽量アルゴリズムは検証済み自作実装を継続使用",
+  "E8専門家評価は人間の専門家が必要なため未実施(R0に明記)",
+  "N=1000+のLarge段階はデータ非提供のため未実施(R1に明記)",
+  "anchor数感度は4/8のみ(3,5,6は本仕様のアンカー配置定義が存在しないため)",
+  "Fisher-Rao測地線はtop-2000特徴部分集合で計算(§5.2の許容範囲)",
+  "seed感度解析のseed>0は初期値へのN(0,0.05)ジッター付与(v3.0の初期値は決定論的なため感度評価用に導入・記録)"
+ ]
+}

@@ -1,0 +1,68 @@
+{
+ "input": "TF-IDF char_wb cosine distance (共通)",
+ "framework_specific_benefits": [
+  "固定枠(アンカー9点): 実行間・コーパス間で座標系が比較可能",
+  "有界領域[-1,1]^2: SPH/GPR連続場・測地線・回帰テストが定義可能",
+  "決定論性: seed0で座標が一意に再現 (t-SNE/UMAPはseed依存)",
+  "目標距離スケールt=καdの明示: stressが物理量として解釈可能"
+ ],
+ "methods": {
+  "v5.0_constrained": {
+   "spearman": 0.6868,
+   "knn_preservation_k7": 0.504,
+   "trustworthiness_k7": 0.849,
+   "continuity_k7": 0.894,
+   "sph_loo_cosine": 0.4708,
+   "sph_loo_std": 0.0737,
+   "fixed_frame_anchors": true,
+   "deterministic": true,
+   "note": "アンカー9点固定・目的関数J・決定論的(seed0で一意)"
+  },
+  "PCA": {
+   "spearman": 0.5151,
+   "knn_preservation_k7": 0.371,
+   "trustworthiness_k7": 0.794,
+   "continuity_k7": 0.834,
+   "sph_loo_cosine": 0.4496,
+   "sph_loo_std": 0.0709,
+   "fixed_frame_anchors": false,
+   "deterministic": true,
+   "note": "線形・決定論的・大域構造のみ"
+  },
+  "MDS": {
+   "spearman": 0.6343,
+   "knn_preservation_k7": 0.411,
+   "trustworthiness_k7": 0.817,
+   "continuity_k7": 0.823,
+   "sph_loo_cosine": 0.4636,
+   "sph_loo_std": 0.0788,
+   "fixed_frame_anchors": false,
+   "deterministic": false,
+   "note": "距離保存特化・初期値依存の局所解あり"
+  },
+  "tSNE": {
+   "spearman": 0.6744,
+   "knn_preservation_k7": 0.704,
+   "trustworthiness_k7": 0.928,
+   "continuity_k7": 0.918,
+   "sph_loo_cosine": 0.5023,
+   "sph_loo_std": 0.071,
+   "fixed_frame_anchors": false,
+   "deterministic": false,
+   "note": "局所近傍特化・大域距離は非保存・seed依存"
+  },
+  "UMAP": {
+   "spearman": 0.6067,
+   "knn_preservation_k7": 0.676,
+   "trustworthiness_k7": 0.91,
+   "continuity_k7": 0.933,
+   "sph_loo_cosine": 0.4927,
+   "sph_loo_std": 0.0653,
+   "fixed_frame_anchors": false,
+   "deterministic": false,
+   "note": "近傍グラフベース"
+  }
+ },
+ "umap_status": "近傍グラフベース",
+ "elapsed_sec": 22.1
+}

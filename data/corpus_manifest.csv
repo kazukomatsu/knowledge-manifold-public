@@ -1,0 +1,101 @@
+map_index,doc_id,title,doi,year,venue,cluster,x,y
+0,KM0001,Tensile strength distribution of carbon fibers at short gauge lengths,10.1080/09243046.2014.915120,2014,,1,-0.882468,-0.09565
+1,KM0002,Multiscale approach to predict crack initiation in unidirectional off-axis laminates,10.1080/09243046.2014.915100,2014,,2,-0.186685,0.756345
+2,KM0003,Experimental and numerical studies of initial cracking in CFRP cross-ply laminates,10.1016/j.compositesa.2014.09.020,2014,,2,0.047995,0.74819
+3,KM0004,13.2 A Brief Historical Review of Matrix Crack Modeling,10.1007/978-3-319-19440-0_13,2015,,2,-0.274243,0.886607
+4,KM0005,Smoothed particle hydrodynamics in a generalized coordinate system with a finite-deformation constitutive model,10.1002/nme,2015,,0,0.615478,0.734784
+5,KM0006,Torsional modulus and internal friction of polyacrylonitrileand pitch-based carbon fibers,10.1007/s10853-011-5872-2,2015,,3,-1.0,-1.0
+6,KM0007,Numerical simulation of damage progression and fracture in structures made of 3D woven ceramic matrix composites,10.1080/09243046.2015.1075672,2015,,0,-0.817017,0.567584
+7,KM0008,Molecular dynamics simulation of crosslinked epoxy resins: Curing and mechanical properties,10.1016/j.eurpolymj.2016.04.019,2015,,3,0.784942,-0.719293
+8,KM0009,Tensile failure phenomena in carbon fibres,10.1016/j.carbon.2016.06.037,2016,,1,-0.674029,-0.580345
+9,KM0010,Multi-objective optimization for resin transfer molding process,10.1002/pc.23826,2016,,3,-0.126736,-0.887522
+10,KM0011,Multiscale modeling of free-surface effect on crack formation in unidirectional off-axis laminates,10.1016/j.compositesa.2017.03.016,2016,,2,-0.414892,0.890152
+11,KM0012,Clustering Approach for Multidisciplinary Optimum Design of Cross-Linked Polymer,10.1002/mats.201600072,2016,,3,0.560039,-0.83656
+12,KM0013,Numerical simulation of progressive damage and failure in composite laminates using XFEM/CZM coupled approach,10.1002/adma.201101683,2016,,4,-0.611837,0.581373
+13,KM0014,Progressive failure under high-velocity impact on composite laminates: Experiment and phenomenological mesomodeling,10.1016/j.engfracmech.2017.03.019,2016,,4,-0.819359,0.412268
+14,KM0015,Prediction for progression of transverse cracking in CFRP cross-ply laminates using Monte Carlo method,10.1080/09243046.2017.1325076,2017,,0,-0.117987,0.905664
+15,KM0016,Fracture behavior of diamondlike carbon films deposited on polymer substrates,10.1116/1.5003683,2018,,3,-0.566805,-0.754956
+16,KM0017,Investigating nanostructures in carbon bres using Raman spectroscopy,10.1016/j.carbon.2017.12.108,2017,,3,-0.79788,-0.722839
+17,KM0018,Continuum damage mechanics modeling of composite laminates including transverse cracks,10.1177/1056789517711238,2018,,0,0.25263,0.922838
+18,KM0019,Analysis of structure characteristics in laminated graphene oxide nanocomposites using molecular dynamics simulation,10.1080/09243046.2017.1407278,2018,,3,0.178528,-0.541537
+19,KM0020,A study of stress concentrations around fiber breaks in unidirectional CF/epoxy composites using double-fiber fragmentation tests,10.1080/09243046.2017.1416567,2016,,1,-0.843318,0.07209
+20,KM0021,Numerical study for tensile strength prediction of unidirectional carbon fiber-reinforced composite considering fiber surface stress concentration,10.1299/mej.19-00020,2019,,1,-0.838325,0.22114
+21,KM0022,A multiscale model for the synthesis of thermosetting resins: From the addition reaction to cross-linked network formation,10.1016/j.cplett.2019.02.012,2001,,3,0.68051,-0.827816
+22,KM0023,Stiffness and permeability multi-objective optimization of carbon-fiber-reinforced plastic mesostructures using homogenization method,10.1177/0021998318812160,2019,,0,0.887836,0.578608
+23,KM0024,Particle simulation of dual-scale flow in resin transfer molding for process analysis,10.1016/j.compositesa.2019.03.038,2019,,0,-0.330851,-0.771224
+24,KM0025,Considering the stress concentration of fiber surfaces in the prediction of the tensile strength of unidirectional carbon fiber-reinforced plastic composites,10.1016/j.compositesa.2019.04.011,2000,,1,-0.747962,-0.071637
+25,KM0026,Dataanalysisofmulti-dimensionalthermophysicalpropertiesofliquid substancesbasedonclusteringapproachofmachinelearning,10.1016/j.cplett.2019.04.075,2019,,3,1.0,0.0
+26,KM0027,Three-dimensional analytical model for effective elastic constants of transversely isotropic plates with multiple cracks: Application to sti ness reduction and steady-state cracking of composite laminates,10.1016/0266-3538(94)90204-6,1994,,0,0.0,1.0
+27,KM0028,Introducing self-organized maps (SOM) as a visualization tool for materials research and education,10.1002/aic.15192,2011,,3,0.059353,-0.844167
+28,KM0029,Gate optimization for resin transfer molding in dual-scale porous media: Numerical simulation and experiment measurement,10.1177/0021998319890122,2020,,3,-0.102734,-0.689388
+29,KM0030,Multiscale analysis and experimental validation of crack initiation in quasi-isotropic laminates,10.13039/501100009538,2019,,2,0.144465,0.572522
+30,KM0031,Numerical Simulation of Wake Deflection Control around NACA0012 Airfoil Using Active Morphing Flaps,10.4236/jfcmv.2020.83007,2020,,3,-0.6369,-0.870358
+31,KM0032,Evaluation of the in-situ damage and strength properties of thin-ply CFRP laminates by microscale finite element analysis,10.1080/09243046.2020.1740867,2020,,4,-0.437593,0.60404
+32,KM0033,Structure property Correlation Study for Organic Photovoltaic Polymer Materials Using Data Science Approach,10.1021/acs.jpcc.0c00517,2020,,3,0.374165,-0.908473
+33,KM0034,Experimental and numerical investigations on push-out delamination in drilling of composite laminates,10.1177/0021998311401087,2011,,4,-0.614598,0.067212
+34,KM0035,Analytical model for determining effective stiffness and mechanical behavior of polymer matrix composite laminates using continuum damage mechanics,10.1177/1056789520939624,2020,,0,0.06061,0.907743
+35,KM0036,Fluid-structural design analysis for composite aircraft wings with various fiber properties,10.1299/kikaia.70.810,2020,,4,-0.741248,-0.263534
+36,KM0037,Tensile-strength-controlling factors in unidirectional carbon fiber reinforced plastic composites,10.1016/j.compositesa.2020.106140,2020,,1,-0.861243,-0.253811
+37,KM0038,Molecular dynamics simulation of cross-linking processes and material properties for epoxy resins using first-principle calculation combined with global reaction route mapping algorithms,10.1016/j.cplett.2020.138104,2014,,3,0.732815,-0.58921
+38,KM0039,A decoupling scheme for two-scale finite thermoviscoelasticity with thermal and cure-induced deformations,10.1007/s11831-016-9167-2,2000,,0,0.894085,0.428439
+39,KM0040,Amine/epoxy stoichiometric ratio dependence of crosslinked structure and ductility in amine-cured epoxy thermosetting resins,10.1021/ma070702%2B,2020,,3,0.897947,-0.410068
+40,KM0041,Experimental and numerical study on progressive damage and failure in composite laminates during open-hole compression tests,10.1016/j.compositesa.2021.106300,2021,,4,-0.625815,0.379845
+41,KM0042,Micromechanical modeling for the in-plane mechanical behavior of orthogonal three-dimensional woven ceramic matrix composites with transverse and matrix cracking,10.1177/10567895211026017,2021,,0,-0.633545,0.842832
+42,KM0043,Thermoset resin curing simulation using quantum-chemical reaction path calculation and dissipative particle dynamics,10.1039/d1sm00600b,2021,,3,0.894203,-0.090942
+43,KM0044,Numerical simulation for deformation of laminates combining the novel shell element with the decoupled two-scale viscoelastic analysis of FRP,10.1016/j.microrel.2016.03.015,2011,,0,0.758459,0.500948
+44,KM0045,Density Functional Theory for Polymer Phase Separations Induced by Coupling of Chemical Reaction and Elastic Stress,10.1002/adts.202100385,2021,,3,1.0,-1.0
+45,KM0046,Multi-fidelity progressive damage simulation of notched composite laminates with various ply thicknesses,10.1016/j.ijsolstr.2022.111518,1997,,4,-0.439031,0.425191
+46,KM0047,Prediction of transverse crack progression based on continuum damage mechanics and its application to composite laminates and filamentwound cylindrical pressure vessels,10.1080/09243046.2022.2048452,2022,,0,-0.435456,0.760256
+47,KM0048,Uncovering the Mechanism of Size Effect on the Thermomechanical Properties of Highly Cross-Linked Epoxy Resins,10.1021/acs.jpcb.1c10827/suppl_file/jp1c10827_si_001.pdf,2022,,3,0.761734,-0.418654
+48,KM0049,A new path-independent interaction integral for dynamic stress intensity factors of cracked structures,10.1201/9781315370293,2017,,0,1.0,1.0
+49,KM0050,A novel single-stroke path planning algorithm for 3D printers using continuous carbon fiber reinforced thermoplastics,10.1016/j.addma.2022.102816,2022,,4,-0.264124,-0.621035
+50,KM0051,Experimental and numerical study on open-hole tension/compression properties of carbon-fiber-reinforced thermoplastic laminates,10.1177/00219983221096880,2022,,4,-0.341821,0.320557
+51,KM0052,Effects of fiber properties on aerodynamic performance and structural sizing of composite aircraft wings,10.1016/j.ast.2022.107565,2022,,4,-1.0,0.0
+52,KM0053,Lap-shear strength and fracture behavior of CFRP/3D-printed titanium alloy adhesive joint prepared by hot-press-aided co-bonding,10.1016/j.ijadhadh.2022.103169,2001,,4,-0.428547,-0.605621
+53,KM0054,Multiscale modeling of process-induced residual deformation on carbon-fiber-reinforced plastic laminate from quantum calculation to laminate scale finite-element analysis,10.1016/j.mechmat.2022.104332,2002,,4,0.563565,0.098086
+54,KM0055,Fatigue crack propagation simulation method using XFEM with variable-node element,10.1016/j.engfracmech.2022.108533,2015,,0,0.719155,0.837076
+55,KM0056,Generalized coordinate smoothed particle hydrodynamics with an overset method in total Lagrangian formulation,10.1016/j.matcom.2008.01.003,2022,,0,0.797866,0.710196
+56,KM0057,Open-hole tensile properties of 3D-printed continuous carbon- ber-reinforced thermoplastic laminates: Experimental study and multiscale analysis,10.1177/08927057221110791,2023,,4,-0.185144,0.234309
+57,KM0058,Morphologies of polymer chains adsorbed on inorganic nanoparticles in a polymer composite as revealed by atomic-resolution electron microscopy,10.1038/s41428-022-00690-4,2022,,3,0.202196,-0.886896
+58,KM0059,Molecular-scale investigation on relationship between thermal conductivity and the structure of crosslinked epoxy resin,10.1016/j.ijheatmasstransfer,2022,,3,0.602316,-0.445862
+59,KM0060,Three-dimensional analytical model for composite laminate with transverse cracks by assuming parabolic crack opening,10.1080/09243046.2023.2167481,2023,,0,0.153238,0.915299
+60,KM0061,Evaluations of atomic-resolution strain fields using molecular dynamics simulations combined with corrected smoothed particle hydrodynamics,10.1016/j.commatsci.2023.112333,1993,,3,0.326027,-0.255066
+61,KM0062,Experimental and numerical investigation of the relationship between material defects and elastoplasticity behavior of 3D-printed carbon-fiber-reinforced thermoplastics under compressive loading,10.1016/j.compscitech.2023.110116,2023,,4,-0.129583,0.06696
+62,KM0063,Long-term two-dimensional analysis of the flow field around a hovering flapping flat-plate wing,10.1299/jfst.2023jfst0026,2023,,3,-0.346552,-0.900172
+63,KM0064,Multiscale model for failure prediction of carbon-fiber-reinforced composites under off-axis load,10.1080/14786437308220987,2017,,4,0.353145,0.139369
+64,KM0065,In-situ shearing process observation system for soft materials via transmission electron microscopy,10.1093/jmicro/dfad045#supplementary-data,1992,,3,0.0,0.0
+65,KM0066,Development of cat-GRRM/MC/MD method for the simulation of cross-linked network structure formation with molecular autocatalysis,10.1016/j.mcat.2023.113680,2010,,3,0.583367,-0.615743
+66,KM0067,Micromechanics study of short carbon fiber-reinforced thermoplastics fabricated via 3D printing using design of experiments,10.1016/j.msea.2023.145971,2000,,4,-0.150353,-0.356878
+67,KM0068,Reaction-induced morphological transitions in a blend of diblock copolymers and reactive monomers: dissipative particle dynamics simulation\,10.1039/d3sm00959a,2024,,3,0.916076,0.215979
+68,KM0069,Dissipative Particle Dynamics Simulation for Reaction-Induced Phase Separation of Thermoset/Thermoplastic Blends,10.1021/acs.jpcb.3c07756&ref=pdf,2024,,3,0.781685,-0.09167
+69,KM0070,Effect of inorganic material surface chemistry on structures and fracture behaviours of epoxy resin,10.1038/s41467-024-46138-6,2023,,3,0.212473,-0.744549
+70,KM0071,Constructing and characterizing various multi-component crosslinked epoxy resins based on molecular dynamics simulations with a curing reaction model,10.1016/j.polymer.2024.126817,2024,,3,0.853502,-0.545322
+71,KM0072,Fracture mechanism of carbon ber-reinforced thermoplastic composite laminates under compression after impact,10.1177/00219983241240622,2024,,4,-0.599184,0.235944
+72,KM0073,Experiment-free multiscale simulation of residual deformation in non-crimp fabric composites,10.1080/09243046.2024.2348861,2024,,4,0.656471,0.242488
+73,KM0074,Determination of interaction parameters in a bottom-up approach employed in reactive dissipative particle dynamics simulations for thermosetting polymers窶_,10.1039/d3sm01743e,2024,,3,0.854649,0.07023
+74,KM0075,Prediction of viscoelastic effective creep compliances in cracked cross-ply composite laminates,10.1287/ijoc.1050.0137,1990,,0,0.546526,0.88151
+75,KM0076,"Effects of the chain length of nonaromatic epoxy resins on thermomechanical and optical properties: experiments, and ab initio and molecular dynamics simulations",10.1039/d4cp02357a,2024,,3,0.886843,-0.245918
+76,KM0077,Enhancing epoxy resin curing: Investigating the catalytic role of water as a trace impurity in dense crosslinked network formation using an advanced cat-GRRM/MC/MD Method,10.1016/j.polymer.2024.127675,2024,,3,0.557401,-0.288138
+77,KM0078,Finite element modeling for cohesive/adhesive failure of adhesive structures with a thermosetting resin,10.1016/j.engfracmech.2024.110552,2024,,4,-0.167995,0.585003
+78,KM0079,Recent studies on multiscale modeling of carbon fiber-reinforced composites,10.1080/09243046.2024.2414467,2024,,4,0.153828,-0.080783
+79,KM0080,Analytical modeling of energy-based matrix crack growth and fiber breakage in unidirectional ceramic matrix composites under static tensile behavior in the longitudinal direction,10.1080/09243046.2024.2427460,2024,,0,-0.803665,0.721433
+80,KM0081,Prediction of Laminate Stiffness Reduction by Regression Equations for Damage Variables Obtained From the Stress-Based Variational Model,10.1115/1.4067568,2024,,0,0.390559,0.896701
+81,KM0082,"Multiscale model for bottom-up prediction of failure parameters of unidirectional carbon-fiber-reinforced composite lamina from the atomic to filament-scales, and its application to failure modeling of open-hole quasi-isotropic composite laminates",10.1016/j.ijsolstr.2024.113130,2022,,4,0.248129,0.31273
+82,KM0083,E_ects of aeroelastic coupling accuracy and geometrical nonlinearity on performances of optimized composite wings,10.1016/j.ast.2024.109926,2024,,4,-0.835535,-0.464591
+83,KM0084,Thermal oxidative degradation of cyanate- and amine-cured epoxy resins: Experiment and ReaxFF simulation,10.1016/j.tca.2025.179949,2025,,3,0.4098,-0.516013
+84,KM0085,Monte Carlo simulation with energy-based matrix and transverse crack growth model for cross-ply ceramic matrix composites under static tensile behavior,10.1080/09243046.2025.2469961,2025,,0,-1.0,1.0
+85,KM0086,Mechanism investigation and comparison of long-term deformations caused by process-induced residual stresses in thermosetting CF/epoxy and thermoplastic CF/PAEK composite laminates,10.1016/j.compositesa.2025.108963,2025,,4,0.42069,0.482058
+86,KM0087,Comparative study of thermosetting CF/epoxy and thermoplastic CF/PAEK composite laminates: Effects of stacking sequences on open-hole strength,10.1177/08927057251344271,2025,,4,-0.336023,0.080352
+87,KM0088,Finite element modeling of viscoelastic creep behavior and transverse cracking in fiber-reinforced composite materials,10.1177/10567895241302543,2024,,4,0.323268,0.725091
+88,KM0089,Process-induced residual stress in non-crimp fabric composites: Experimental and numerical evaluation considering viscoelasticity,10.1016/j.mechmat.2025.105423,2016,,4,0.571059,0.480986
+89,KM0090,Structural optimization of composite aircraft wing considering fluid_structure interaction and damage tolerance assessment using continuum damage mechanics,10.1016/j.ast.2025.110652,2025,,4,-0.533054,-0.147547
+90,KM0091,Multiscale modeling of residual deformation in CFRP with reaction-induced phase separation,10.1016/j.ijmecsci.2025.110779,1981,,4,0.48333,-0.054141
+91,KM0092,Finite element modeling for cohesive failure of adhesive structures: Hydrostatic stress dependence,10.1016/j.euromechsol.2025.105920,2023,,4,-0.004901,0.421336
+92,KM0093,Multi-objective Bayesian optimization of composite aircraft wings using various carbon fibers,10.1016/j.msea.2005.08.064,2000,,4,-0.620059,-0.424718
+93,KM0094,Evaluation of Mechanical Properties of Phase-Separated Cellulose Filler/Poly(Lactic Acid)/Elastomer Composites via Microstructure-Informed Physics Simulation and In Situ Synchrotron X-Ray Micro-CT,10.1002/app.70647,2025,,4,0.065366,-0.351774
+94,KM0095,"Significant Thickness Dependence of In-Plane Thermal Conductivity in Poly(3-hexylthiophene-2,5-diyl) Thin Films",10.1021/acsmaterialslett.5c01197,2025,,3,0.0,-1.0
+95,KM0096,Mechanism of glass transition temperature enhancement in multicomponent epoxy resins incorporating triazine rings,10.1039/d6cp01039c,2026,,3,0.780723,-0.255971
+96,KM0097,Multi-scale numerical framework for effects of fiber properties on designing composite wind turbine blades,10.1115/1.3153664,2021,,4,-0.434977,-0.339979
+97,KM0098,Process-induced degradation of tensile strength in 3D-printed carbon fiber_reinforced PA6: Experimental and numerical study,10.1177/07316844261457658,2026,,4,-0.256829,-0.178547
+98,KM0099,3D morphology and phase-selective transport in amphiphilic silicone hydrogels: experiments and multiscale simulations,10.1039/d6sm00092d,2026,,3,0.392754,-0.770877
+99,KM0100,Multiscale modeling of toughening in thermosetting resins based on a microscopic damage model: Application to bonded CFRP structures,10.1016/j.compstruct.2023.117726,2008,,4,0.07956,0.234988

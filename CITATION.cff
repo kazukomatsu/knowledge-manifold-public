@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+title: "Knowledge Manifold pipeline"
+abstract: >-
+  Deterministic pipeline that embeds a document corpus into a fixed-frame,
+  bounded 2-D knowledge manifold with continuous SPH/GPR fields and
+  multi-metric geodesics, and exports machine-computed evidence packages for
+  auditable verbalization.
+type: software
+repository-code: "TODO: GitHub URL once the repository is created"
+
+# TODO before publishing — the following are placeholders that must be
+# confirmed by the first author. Author order, given names in Latin script and
+# ORCIDs were deliberately not guessed.
+authors:
+  - family-names: Kawagoe
+    given-names: Yoshiaki
+    affiliation: "Green Cross-Tech Research Center, Tohoku University"
+    email: kawagoe@tohoku.ac.jp
+  # - TODO: remaining co-authors, in the order used on the manuscript
+  #   (Okabe; Obayashi, Institute of Fluid Science; Komatsu)
+
+preferred-citation:
+  type: article
+  title: "TODO: manuscript title"
+  journal: "Journal of Informetrics"
+  year: 2026
+  status: submitted
+  authors:
+    - family-names: Kawagoe
+      given-names: Yoshiaki
+    # - TODO: remaining co-authors

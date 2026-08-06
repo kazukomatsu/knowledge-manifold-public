@@ -1,0 +1,9 @@
+# Optional: adds the UMAP baseline to 15_e10_embeddings.py. Without it the
+# script records "umap_status: 未実施" and skips that one baseline; nothing else
+# changes.
+#
+# Kept out of requirements.txt on purpose: umap-learn pulls in numba, which
+# lags new Python releases. Installing it on Python 3.14 fails to build numba,
+# which would otherwise block the core install.
+-r requirements.txt
+umap-learn>=0.5.12

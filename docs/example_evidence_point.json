@@ -1,0 +1,179 @@
+{
+ "query_location": [
+  -0.5,
+  0.0
+ ],
+ "corpus": "100 papers, carbon-fiber composite research (single laboratory)",
+ "how_produced": "deterministic pipeline; feature selection on character n-grams, then each selected n-gram resolved to the words containing it in the corpus text; terms below are WORDS, df = number of corpus documents containing the word",
+ "theme_lens_L2": [
+  {
+   "term": "breakage",
+   "word_forms": [
+    "breakage",
+    "breakages",
+    "fiber-breakage-induced",
+    "leakage"
+   ],
+   "df": 30
+  },
+  {
+   "term": "kinking",
+   "word_forms": [
+    "kinking",
+    "kink",
+    "kink-band",
+    "kinkband"
+   ],
+   "df": 23
+  },
+  {
+   "term": "feed",
+   "word_forms": [
+    "feed"
+   ],
+   "df": 4
+  },
+  {
+   "term": "thrust",
+   "word_forms": [
+    "thrust",
+    "thrust-force",
+    "thrust-specific",
+    "thrust-to-weight"
+   ],
+   "df": 6
+  },
+  {
+   "term": "drilling",
+   "word_forms": [
+    "drilling",
+    "drilled",
+    "drill",
+    "drill-exit"
+   ],
+   "df": 8
+  },
+  {
+   "term": "push-out",
+   "word_forms": [
+    "push-out",
+    "push-put"
+   ],
+   "df": 4
+  },
+  {
+   "term": "cfrtp",
+   "word_forms": [
+    "cfrtp",
+    "cfrtps",
+    "cfrts",
+    "dp-cfrtp"
+   ],
+   "df": 12
+  },
+  {
+   "term": "weibull",
+   "word_forms": [
+    "weibull",
+    "weibull-related"
+   ],
+   "df": 22
+  },
+  {
+   "term": "hole",
+   "word_forms": [
+    "hole"
+   ],
+   "df": 24
+  }
+ ],
+ "concentration_lens_L1": [
+  {
+   "term": "feed",
+   "word_forms": [
+    "feed"
+   ],
+   "df": 4
+  },
+  {
+   "term": "drilling",
+   "word_forms": [
+    "drilling",
+    "drill"
+   ],
+   "df": 7
+  },
+  {
+   "term": "breakage",
+   "word_forms": [
+    "breakage",
+    "breakages",
+    "fiber-breakage-induced"
+   ],
+   "df": 30
+  },
+  {
+   "term": "thrust",
+   "word_forms": [
+    "thrust",
+    "thrust-force",
+    "thrust-specific",
+    "thrust-to-weight"
+   ],
+   "df": 6
+  },
+  {
+   "term": "push-out",
+   "word_forms": [
+    "push-out"
+   ],
+   "df": 4
+  },
+  {
+   "term": "spindle",
+   "word_forms": [
+    "spindle"
+   ],
+   "df": 1,
+   "source_docs": [
+    {
+     "doc": 33,
+     "title": "Experimental and numerical investigations on push-out delamination in "
+    }
+   ]
+  },
+  {
+   "term": "unprocessed",
+   "word_forms": [
+    "unprocessed"
+   ],
+   "df": 1,
+   "source_docs": [
+    {
+     "doc": 33,
+     "title": "Experimental and numerical investigations on push-out delamination in "
+    }
+   ]
+  }
+ ],
+ "contributing_documents_top3": [
+  {
+   "doc": 33,
+   "weight": 0.133,
+   "title": "Experimental and numerical investigations on push-out delamination in "
+  },
+  {
+   "doc": 89,
+   "weight": 0.126,
+   "title": "Structural optimization of composite aircraft wing considering fluid_s"
+  },
+  {
+   "doc": 86,
+   "weight": 0.113,
+   "title": "Comparative study of thermosetting CF/epoxy and thermoplastic CF/PAEK "
+  }
+ ],
+ "mixture_entropy_H": 0.614,
+ "effective_contributing_documents": 16.9,
+ "relative_uncertainty_u": 0.219
+}

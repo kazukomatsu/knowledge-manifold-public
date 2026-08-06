@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # >= 3.11 because every pinned dependency declares Requires-Python >= 3.11.
+        # 3.11 and 3.14 are verified locally; 3.12 and 3.13 interpolate.
+        # umap-learn is deliberately not installed here — see requirements-optional.txt.
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest
+
+      - name: Report the resolved environment
+        # The published numbers are sensitive to the linear-algebra stack, so
+        # record exactly what this job used. See KNOWN_ISSUES.md #2.
+        run: |
+          python -c "import sys, numpy, scipy, sklearn; \
+            print('python', sys.version); \
+            print('numpy', numpy.__version__, 'scipy', scipy.__version__, \
+                  'sklearn', sklearn.__version__)"
+          python -c "import numpy; numpy.show_config()"
+
+      - name: Syntax-check every pipeline script
+        run: python -m py_compile code/*.py
+
+      - name: Unit and integration tests
+        run: python -m pytest tests/ -v --tb=short
+
+      - name: Reproduce the published metrics from the shipped artifacts
+        run: python code/verify_reference.py
+
+      - name: Assert no corpus text is tracked
+        # X_raw.npy and vocab.json can be reassembled into running text and must
+        # never enter the repository. See data/README.md.
+        run: |
+          if git ls-files | grep -E '(X_raw\.npy|vocab\.json|100paper.*\.md|\.pdf$)'; then
+            echo "::error::corpus-derived file is tracked in git"
+            exit 1
+          fi
+          echo "clean: no corpus text tracked"

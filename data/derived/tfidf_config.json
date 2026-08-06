@@ -1,0 +1,37 @@
+{
+ "analyzer": "char_wb",
+ "ngram_range": [
+  4,
+  7
+ ],
+ "sublinear_tf": true,
+ "smooth_idf": true,
+ "max_features": 250000,
+ "min_df": 1,
+ "norm": null,
+ "vocab_size_full": 662050,
+ "vocab_size": 250000,
+ "nnz": 2444244,
+ "epsilon_l1_smoothing": 1e-10,
+ "implementation": "sklearn TfidfVectorizer (analyzer=char_wb)",
+ "l1_simplex_rowsum_min": 0.9999998807907104,
+ "l1_simplex_rowsum_max": 1.0000001192092896,
+ "example_doc0_doc1": {
+  "js_divergence": 0.43613432155943777,
+  "js_distance": 0.6604046650042971,
+  "hellinger": 0.7906432598563778,
+  "fisher_rao": 2.3730510102233437
+ },
+ "svd_top10_evr": [
+  0.20588,
+  0.03636,
+  0.0218,
+  0.02011,
+  0.01855,
+  0.01662,
+  0.01553,
+  0.01445,
+  0.01328,
+  0.01317
+ ]
+}
