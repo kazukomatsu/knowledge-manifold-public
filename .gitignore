@@ -19,6 +19,9 @@ venv*/
 *.egg-info/
 .pytest_cache/
 
+# Local work logs (not for co-authors / not part of the release)
+logs/
+
 # OS / editor
 .DS_Store
 .clearance-rendered-preview-*/
