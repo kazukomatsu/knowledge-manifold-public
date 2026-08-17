@@ -25,7 +25,8 @@ if phase == "gpr":
             "constant": float(np.exp(gp.theta[0])), "length_scale_x": float(np.exp(gp.theta[1])),
             "length_scale_y": float(np.exp(gp.theta[2])), "white_noise": float(np.exp(gp.theta[3])),
             "log_marginal_likelihood": gp.lml_,
-            "implementation": "custom NumPy GPR (sklearn unavailable); hyperparams by Nelder-Mead multi-restart"}
+            "implementation": "sklearn GaussianProcessRegressor (n_restarts_optimizer=10, random_state=0); "
+                              "posterior recomputed in NumPy from the fitted hyperparameters"}
     json.dump(info, open(OUT + "/gpr_info.json", "w"), indent=1)
     print(json.dumps(info, indent=1))
 

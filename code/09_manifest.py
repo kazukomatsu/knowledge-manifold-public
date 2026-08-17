@@ -63,7 +63,7 @@ manifest = {
   "lambda_values": [0, 1, 4, 9],
   "geodesic": {"n_points": 31, "n_inner": 29,
                "multistart_amplitudes": [0, 0.01, -0.01, 0.03, -0.03, 0.05, -0.05],
-               "optimizer": "custom L-BFGS (two-loop, Armijo backtracking; scipy L-BFGS-B unavailable)",
+               "optimizer": "scipy L-BFGS-B via kmlib.lbfgs (multistart over the amplitudes above)",
                "maxiter": 2000, "ftol": 1e-12, "gtol": 1e-8, "maxls": 50,
                "eps_singular": 1e-10,
                "fr_top_feature_subset": 2000},

@@ -1,11 +1,13 @@
 # Corrections
 
-Two defects were found while preparing this repository for release. **Both are
-fixed here.** Each is documented with the measurement that exposed it, because
-one of them changes a value that appears in the manuscript and the other changes
-the orientation of every figure.
+Three defects were found while preparing this repository for release. **All are
+fixed here.** The first two are documented with the measurement that exposed
+them, because one changes a value that appears in the manuscript and the other
+changes the orientation of every figure. The third is a provenance string that
+misdescribed how the code works; no value depends on it.
 
-Both had passed all 15 validation gates undetected. That is the common lesson:
+Defects 1 and 2 had both passed all 15 validation gates undetected. That is the
+common lesson:
 the gates check properties of pairwise distances and never checked either the
 uniqueness of absolute coordinates or the range of a metric that is by
 definition a fraction.
@@ -215,3 +217,29 @@ gauge fix for that; the environment has to be pinned, which is what
 
 `TestAnchorGaugeFixing` — six tests, including one that perturbs the distance
 matrix by 1e-14 twelve times and asserts the assignment never moves.
+
+---
+
+## 3. The recorded provenance misdescribed two optimisers
+
+**Fixed. No value changes; the shipped `manifest.json` is edited in place.**
+
+`manifest.json` carried two claims that the code contradicts:
+
+| field | recorded | actually used |
+|---|---|---|
+| `gpr.implementation` | custom NumPy GPR (sklearn unavailable); hyperparams by Nelder-Mead multi-restart | `sklearn.gaussian_process.GaussianProcessRegressor(n_restarts_optimizer=10, random_state=0)` in `kmlib.GPR.fit`; the posterior is then recomputed in NumPy from the fitted hyperparameters |
+| `geodesic.optimizer` | custom L-BFGS (two-loop, Armijo backtracking; scipy L-BFGS-B unavailable) | `scipy.optimize.minimize(method="L-BFGS-B")` through `kmlib.lbfgs`, called at `05_geodesics.py:134` |
+
+Both are leftovers from an earlier stage of the work, when those libraries really
+were unavailable, and both were already contradicted inside the same file:
+`environment.note` and `deviations_from_spec` state that the GPR is sklearn's and
+the optimiser scipy's, and `map_audit.json` records the map optimiser correctly as
+`scipy L-BFGS-B`. `kmlib.nelder_mead()` survives from that period and is now
+called by nothing.
+
+No number moves: the fields are descriptive, and no code reads them —
+`validate.py` reads `n_restarts`, `length_scale_x` and `white_noise` from
+`gpr_info.json`, never `implementation`. The sources are fixed too
+(`04_fields.py` writes `gpr_info.json`, `09_manifest.py` writes `manifest.json`),
+so regenerated runs record the corrected text.
