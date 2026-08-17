@@ -26,6 +26,14 @@ pip install -r requirements-optional.txt   # 任意
 通りますが、論文の数値が再現することは主張していません。また `umap-learn` は `numba` 依存の
 ため 3.14 ではビルドできません。
 
+**Python 3.10 について。** `requirements.txt` の固定版は 3.10 では解決できません(`numpy==2.4.6` が
+Requires-Python >=3.11、3.10 の上限は numpy 2.2.6)。3.10 で入る最新スタック
+(numpy 2.2.6 / scipy 1.15.3 / sklearn 1.7.2 / matplotlib 3.10.9、`umap-learn==0.5.12` も可)では
+2026-08-18 実測で `pytest tests/` 32 passed、`code/verify_reference.py` が 28 指標すべて再現しました。
+`verify_reference.py` は同梱 Gram 行列を読むだけで `X @ X.T` を再計算しないため、版固定が守っている
+箇所を通りません。したがって**コーパス無しの照合は 3.10 でも可**です。3.10 でできないのは、
+コーパスから公開座標を再構築することです(それには 3.11.15 固定環境が必要)。
+
 **Python 3.9 では実行しないでください。** 15 ゲートは通りますが、アンカー割り当ての決着が
 変わり E1 がずれます(spearman 0.687 → 0.676)。
 

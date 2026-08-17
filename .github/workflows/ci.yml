@@ -12,11 +12,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 3.11 only: it is the sole version the published results were verified
-        # on, and requirements.txt pins the exact stack that produced them.
+        include:
+          # 3.11 is the reference environment: requirements.txt pins the exact
+          # stack the shipped artifacts were produced on, and it is the only
+          # version the published results were verified on end to end.
+          - python-version: "3.11"
+            install: "-r requirements.txt pytest"
+          # 3.10 cannot take those pins (numpy 2.4.6 requires >=3.11), so it gets
+          # the newest stack 3.10 accepts. The suite and the corpus-free metric
+          # verification must still pass there; rebuilding the published map from
+          # a corpus is not claimed. See the "Python 3.10" section of README.md.
+          - python-version: "3.10"
+            install: "numpy scipy scikit-learn matplotlib pytest"
         # Newer Pythons are not claimed to reproduce the paper's numbers, and
         # umap-learn cannot be built on 3.14 at all.
-        python-version: ["3.11"]
 
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt pytest
+          pip install ${{ matrix.install }}
 
       - name: Report the resolved environment
         # The published numbers are sensitive to the linear-algebra stack, so

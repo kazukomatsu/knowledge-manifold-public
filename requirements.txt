@@ -10,6 +10,11 @@
 # Do not run this on Python 3.9. It completes and still passes all 15 gates, but
 # the anchor tie-break resolves differently and E1 drifts (Spearman 0.676
 # instead of 0.687).
+#
+# Python 3.10: these pins do not resolve at all (numpy 2.4.6 needs >=3.11; 3.10
+# tops out at numpy 2.2.6). The unpinned 3.10 stack still passes the test suite
+# and reproduces all 28 published metrics — see the "Python 3.10" section of
+# README.md — but it cannot rebuild the published map from a corpus.
 numpy==2.4.6
 scipy==1.17.1
 scikit-learn==1.9.0

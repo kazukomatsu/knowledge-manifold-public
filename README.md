@@ -36,7 +36,7 @@ pip install -r requirements.txt
 pip install -r requirements-optional.txt   # optional: adds the UMAP baseline
 ```
 
-3.11 is the supported version, not a lower bound. The map is sensitive to the
+3.11 is the reference environment, not a lower bound. The map is sensitive to the
 linear-algebra stack — the sparse Gram product `X @ X.T` varies by ~5e-9 relative
 between BLAS builds, which is enough to change the anchor assignment
 (`CORRECTIONS.md` #2) — so the dependency versions are pinned exactly to the
@@ -44,6 +44,26 @@ ones that produced the shipped artifacts, and 3.11.15 is the only interpreter on
 which the published numbers were verified end to end. The code imports and its
 unit tests pass on newer Pythons, but reproduction of the paper's values is not
 claimed there, and `umap-learn` cannot be built on 3.14 at all.
+
+### Python 3.10
+
+The pinned versions do not resolve on 3.10 — `numpy==2.4.6` requires 3.11 or
+newer, and the newest stack 3.10 accepts is numpy 2.2.6 / scipy 1.15.3 /
+scikit-learn 1.7.2 / matplotlib 3.10.9. On that unpinned stack (verified
+2026-08-18, macOS arm64, and `umap-learn==0.5.12` installs there too):
+
+```bash
+python3.10 -m venv .venv310 && source .venv310/bin/activate
+pip install numpy scipy scikit-learn matplotlib pytest   # no pinning possible
+python3 -m pytest tests/ -v            # 32 passed
+python3 code/verify_reference.py       # ALL 28 METRICS REPRODUCED
+```
+
+So the corpus-free verification path is available on 3.10. It is insensitive to
+the stack by construction: `verify_reference.py` reads the shipped Gram matrix
+rather than recomputing `X @ X.T`, which is the step the pinning exists to
+protect. What 3.10 cannot give you is a *rebuild* of the map from a corpus that
+lands on the published coordinates; that needs the pinned 3.11.15 environment.
 
 Do not run this on Python 3.9. It completes and still passes all 15 validation
 gates, but the anchor assignment resolves differently and E1 drifts (Spearman
