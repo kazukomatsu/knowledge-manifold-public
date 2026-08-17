@@ -9,24 +9,38 @@ abstract: >-
 type: software
 repository-code: "TODO: GitHub URL once the repository is created"
 
-# TODO before publishing — the following are placeholders that must be
-# confirmed by the first author. Author order, given names in Latin script and
-# ORCIDs were deliberately not guessed.
+# Authors, affiliations and title taken from the manuscript of 2026-08-17
+# (JOI_20260817.pdf). Komatsu and Kawagoe contributed equally; Kawagoe is the
+# corresponding author. ORCIDs are still missing and were not guessed.
 authors:
+  - family-names: Komatsu
+    given-names: Kazuhiko
+    affiliation: "Research Center for Green X-Tech, Tohoku University"
   - family-names: Kawagoe
     given-names: Yoshiaki
-    affiliation: "Green Cross-Tech Research Center, Tohoku University"
+    affiliation: "Research Center for Green X-Tech / Department of Aerospace Engineering, Tohoku University"
     email: kawagoe@tohoku.ac.jp
-  # - TODO: remaining co-authors, in the order used on the manuscript
-  #   (Okabe; Obayashi, Institute of Fluid Science; Komatsu)
+  - family-names: Obayashi
+    given-names: Shigeru
+    affiliation: "Institute of Fluid Science, Tohoku University"
+  - family-names: Okabe
+    given-names: Tomonaga
+    affiliation: "Department of Aerospace Engineering, Tohoku University"
 
 preferred-citation:
   type: article
-  title: "TODO: manuscript title"
+  title: >-
+    Knowledge Manifold: A Geometric Framework for Science Mapping and Knowledge
+    Navigation
   journal: "Journal of Informetrics"
   year: 2026
   status: submitted
   authors:
+    - family-names: Komatsu
+      given-names: Kazuhiko
     - family-names: Kawagoe
       given-names: Yoshiaki
-    # - TODO: remaining co-authors
+    - family-names: Obayashi
+      given-names: Shigeru
+    - family-names: Okabe
+      given-names: Tomonaga

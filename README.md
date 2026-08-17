@@ -18,9 +18,13 @@ This code accompanies a manuscript submitted to *Journal of Informetrics*. See
 [`CITATION.cff`](CITATION.cff).
 
 > **Read [`CORRECTIONS.md`](CORRECTIONS.md) before comparing against earlier
-> drafts.** Two defects found while preparing this release are fixed here. One
-> changes the reported kNN-preservation values (k=7: 0.504 → 0.427); the other
-> mirrors every figure left-to-right. No other published metric moves.
+> drafts.** Three defects found while preparing this release are fixed here: one
+> changes the reported kNN-preservation values (k=7: 0.504 → 0.427), one
+> re-orients every figure relative to pre-fix drafts, and one corrected a
+> provenance string that misdescribed two optimisers. No published metric other
+> than kNN preservation moves. The manuscript of 2026-08-17 already uses the
+> post-fix gauge — its Fig. 1 places all nine anchor documents exactly where
+> `data/derived/coords.npy` does.
 
 ## Requirements
 
@@ -95,6 +99,9 @@ KM_DATA="$PWD/outputs/mycorpus/work" \
 python3 code/validate.py
 ```
 
+`validate.py` must pass before any number is reported; the 15 gates and their
+thresholds are tabulated in Table S1 of the supplementary material.
+
 Expect roughly 12–20 minutes on one core; the 34 geodesics dominate. `--quick`
 skips the E7/E8 stability and sensitivity sweeps, which is most of the time —
 but some validation gates then fail, because they read E8 products. `--fullfig`
@@ -154,6 +161,32 @@ Script names carry historical version numbers (`run_v50.sh`, `12_map_v30.py`)
 that no longer match the spec version they implement, which is v5.2
 (`KAPPA=0.80` and the other v5.2 values). They were left alone so that existing
 artifacts and log files stay traceable.
+
+## Correspondence with the manuscript
+
+The manuscript numbers its evaluations in order of presentation; the file names
+carry the internal numbering the suite was developed under. The two do not
+agree — E1 and E2 are transposed, and the paper's E8 is the internal `e7_*`.
+
+| Paper | Content | Artifacts | Here? |
+|---|---|---|---|
+| E1 | leave-one-out prediction | `e2_loo_global.json`, `e2_loo_knn_adaptive.json` | shipped in `data/derived/` |
+| E2 | distance preservation | `e1_distance_preservation.json` | shipped in `data/derived/` |
+| E3 | embedding baselines | `e10_embedding_comparison.json` | shipped in `data/derived/` |
+| E4 | geodesic family | `geodesic_results.csv`, `e4_lambda_path_deviation.json`, `path_*.npy` | produced by a run |
+| E5 | lenses and readout | `e9_verbalization_L1_L2.json` | produced by a run; the two-tier appendix analysis is not |
+| E6 | evidence budget and vocabulary | — | bundle only |
+| E7 | cross-model verbalization | — | bundle only: the six verbatim model responses |
+| E8 | robustness suite | `e7_*.json`, `r1_N*.json` | produced by a run, skipped under `--quick` |
+| E9 | independent journal corpora | — | bundle only: this same pipeline on two further corpora of 100 papers each, sampled from *Polymer* and the *Journal of Informetrics* (2020–2026, open access) |
+
+This repository is the code-and-derived-data release. The submission bundle
+additionally carries `config/`, the full `results/` tree (metrics, coordinates,
+paths, figures, plot data, appendix analyses), `evidence/` (the packages handed
+to the language models and their six verbatim responses),
+`results_external/` (the journal-corpus replication) and the supplementary
+material as submitted. That bundle's own README is kept here as
+[`docs/submission_bundle_README.md`](docs/submission_bundle_README.md).
 
 ## Tests
 

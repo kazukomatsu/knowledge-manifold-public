@@ -225,6 +225,9 @@ written    : evidence_point_-0.5_0.0.json
 - スクリプト名の `v50` や `12_map_v30.py` の `v30` は開発初期に付いた名前で、中身は v5.2
   です(`KAPPA=0.80` などの v5.2 確定値)。過去の成果物との対応を保つため据え置いています。
   **設定値はコード内に直接書かれており、設定ファイルは同梱していません。**
+- 論文の評価番号 (E1〜E9) とファイル名の内部番号は一致しません(E1 と E2 が入れ替わり、論文 E8 が
+  内部の `e7_*`)。対応表は [`../README.md`](../README.md) の "Correspondence with the manuscript"、
+  投稿バンドル側の構成は [`submission_bundle_README.md`](submission_bundle_README.md) にあります。
 - 環境変数: `KM_DERIVED`(入力)、`KM_OUT`(成果物)、`KM_DATA`(中間、既定は `KM_OUT/work`)、
   `KM_OVERRIDES`(κ や λ の JSON 上書き)、`KM_SUBSET_N`(部分コーパス)。
   `run_v50.sh` が前 3 つを設定します。

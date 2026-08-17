@@ -200,8 +200,22 @@ against the pre-fix run; the new map is the exact mirror of the old one
 
 **Consequence for the manuscript:** the canonical gauge is *a* valid member of
 the orbit, not necessarily the one the earlier figures used. No metric changes,
-but figures regenerated after the fix are mirrored left-to-right relative to
-earlier drafts. `data/reference_figures/` holds the post-fix versions.
+but figures regenerated after the fix are re-oriented relative to pre-fix
+drafts. `data/reference_figures/` holds the post-fix versions.
+
+**The submitted manuscript is not affected.** In the version of 2026-08-17,
+Fig. 1 places all nine anchor documents exactly where `data/derived/coords.npy`
+puts them — 5 bottom-left, 44 bottom-right, 48 top-right, 84 top-left, 25 and 51
+on the x-edge midpoints, 26 and 94 on the y-edge midpoints, 64 at the centre
+(checked against the figure's own vector label coordinates). The paper and this
+repository share one gauge, so no re-orientation statement applies between them.
+
+Two comparisons do remain, and they land on different elements of D4, so keep
+them apart. Against the **pre-fix run in this same environment** the canonical
+map is the left-right mirror measured above (`flipX`, deviation 0.080 over the
+100 documents; the canonical assignment is the one Python 3.9 produced). Against
+the **earlier drafts** it is the diagonal mirror (x <-> y), which is what the
+update note in `docs/submission_bundle_README.md` records.
 
 ### Residual, and why Python 3.11 is pinned
 
