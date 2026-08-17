@@ -24,6 +24,23 @@ def cosine_dist_matrix(Xl2):
     G = Xl2 @ Xl2.T
     return np.clip(1.0 - G, 0.0, 2.0)
 
+def select_readout(out_dir):
+    """読み出し層の選択 (論文 Sec.3.3 のプロトコル).
+    e2_loo_global.json と e2_loo_knn_adaptive.json を比較し、
+    LOO cosine が高い方の h 方式を返す。両ファイルが無ければ adaptive を返す
+    (選択には 06_eval.py e2 の両方式実行が必要)。
+    戻り値: ("global", {}) または ("knn_adaptive", {"knn_k": 8})
+    """
+    import json as _json, os as _os
+    try:
+        g = _json.load(open(_os.path.join(out_dir, "e2_loo_global.json")))["loo_cosine_mean"]
+        a = _json.load(open(_os.path.join(out_dir, "e2_loo_knn_adaptive.json")))["loo_cosine_mean"]
+    except Exception:
+        return "knn_adaptive", {"knn_k": 8}
+    if g > a:
+        return "global", {}
+    return "knn_adaptive", {"knn_k": 8}
+
 # ---------------- アンカー割当 (§2.2.2) ----------------
 # 縮退許容の相対誤差。アンカー配置(4隅+4辺中点+中央)は正方形の二面体群 D4 の対称性を
 # 持つため、最適割当は厳密に8個縮退する(実測の縮退幅 ~5e-15 = 0〜3 ulp)。次のコスト

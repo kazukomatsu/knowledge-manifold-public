@@ -179,6 +179,15 @@ written    : evidence_point_-0.5_0.0.json
 
 `--topk` で語数(既定 15)、`--outfile` で出力先を指定できます。
 
+読み出し層の平滑化長 h は論文 Sec.3.3 の二層方針で決まります。幾何(場・微分・計量・測地線)は
+常に global を使い、**読み出し層だけ**が選択対象です。`kmlib.select_readout()` が
+`e2_loo_global.json` と `e2_loo_knn_adaptive.json`(第 5 段が両方式で出力)の LOO cosine を比較し、
+高い方を採用します。研究室コーパスでは adaptive(0.4708 対 0.4663)、E9 の 2 つのジャーナル
+コーパス(Polymer / J. Informetrics)では global が選ばれます(論文 Table 5)。
+`--readout global|adaptive` で固定でき、`13_llm_export.py` は選択結果を標準出力に出します。
+両ファイルが無い場合は adaptive です。なお adaptive の h は「9 番目に近い文書までの距離」で、
+コード上の `knn_k=8` は 0-origin の添字なので論文の定義と一致します。
+
 パッケージ中の語は、char n-gram を出典テキスト中の語へ復元したものです。断片(`ompto`)では
 なく語(`compton`)で渡るため、モデルが人名と誤認する取り違えが起きません。
 

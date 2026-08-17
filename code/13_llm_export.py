@@ -19,14 +19,18 @@ usage: python3 13_llm_export.py
 import json, os, sys, csv, glob
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from kmlib import OUT, DATA, load_tfidf, sph_weights, sph_entropy, GPR, kmeans, term_ok, load_stoplist
+from kmlib import OUT, DATA, load_tfidf, sph_weights, sph_entropy, GPR, kmeans, term_ok, load_stoplist, select_readout
 import pickle
 
 TOPK_FEAT = 15
+# 読み出し層の選択 (Sec.3.3): LOO で global / adaptive を比較して良い方を使う
+READOUT_MODE, READOUT_KW = None, None
 TOPK_DOCS = 3
 t_out = {}
 
 P = np.load(OUT + "/coords.npy")
+READOUT_MODE, READOUT_KW = select_readout(OUT)
+print(f"readout tier selected: {READOUT_MODE}", flush=True)
 X, l2n, l1s = load_tfidf()
 Xl2 = (X / l2n[:, None]).astype(np.float64)
 vocab = json.load(open(DATA + "/vocab.json"))
@@ -75,7 +79,7 @@ def l1_kl_features(pi, k=TOPK_FEAT):
     return out
 
 def point_semantics(pt):
-    w = sph_weights(np.asarray(pt)[None], P, h_mode="knn_adaptive", knn_k=8)[0]
+    w = sph_weights(np.asarray(pt)[None], P, h_mode=READOUT_MODE, **READOUT_KW)[0]
     v = w @ Xl2
     v /= np.linalg.norm(v)
     pi = w @ Xl1

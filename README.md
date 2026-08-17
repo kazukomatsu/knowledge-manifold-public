@@ -111,6 +111,16 @@ python3 code/make_evidence.py --x -0.5 --y 0.0 \
     --out outputs/mycorpus --data outputs/mycorpus/work --code code
 ```
 
+The readout smoothing length follows the selection protocol of the manuscript
+(Sec. 3.3): `kmlib.select_readout()` scores both rules by leave-one-out
+reconstruction — `e2_loo_global.json` against `e2_loo_knn_adaptive.json`, both
+written by stage 5 — and adopts the better one. Only the readout tier is
+selected; the geometry always uses the global rule. On the laboratory corpus the
+selection lands on adaptive (LOO cosine 0.4708 against 0.4663), and on both
+journal corpora of E9 on global (Table 5 of the manuscript).
+`--readout global|adaptive` forces the choice, `13_llm_export.py` prints the tier
+it selected, and with neither LOO file present the adaptive rule is used.
+
 This prints the location's uncertainty, mixture entropy and both term lenses,
 and writes `evidence_point_-0.5_0.0.json`. Hand that file **together with**
 `docs/verbalization_protocol.md` to a language model. Passing the evidence

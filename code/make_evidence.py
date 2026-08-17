@@ -22,11 +22,14 @@ ap.add_argument("--out", required=True, help="パイプラインの出力ディ�
 ap.add_argument("--data", required=True, help="中間ファイルのディレクトリ (KM_DATA)")
 ap.add_argument("--code", default="code", help="kmlib.py のあるディレクトリ")
 ap.add_argument("--topk", type=int, default=15, help="各レンズの特徴語数")
+ap.add_argument("--readout", choices=["auto", "global", "adaptive"], default="auto",
+                help="読み出し層の h。auto は論文 Sec.3.3 の選択則"
+                     "（LOO で global/adaptive を比較し良い方を採用）")
 ap.add_argument("--outfile", default=None, help="出力する JSON のパス")
 args = ap.parse_args()
 
 sys.path.insert(0, os.path.abspath(args.code))
-from kmlib import sph_weights, sph_entropy, term_ok, load_stoplist, GPR
+from kmlib import sph_weights, sph_entropy, term_ok, load_stoplist, GPR, select_readout
 O = os.path.abspath(args.out); D = os.path.abspath(args.data)
 P=np.load(O+"/coords.npy"); X=np.load(D+"/X_raw.npy"); l2n=np.load(D+"/l2_norms.npy")
 vocab=json.load(open(D+"/vocab.json")); ST=load_stoplist(); DF=(X>0).sum(0)
@@ -122,7 +125,14 @@ def lens_words(idx_list):
     return out
 
 pt=np.array([[args.x,args.y]])
-w=sph_weights(pt,P,h_mode="knn_adaptive",knn_k=8)[0]
+if args.readout == "auto":
+    _mode, _kw = select_readout(O)
+elif args.readout == "global":
+    _mode, _kw = "global", {}
+else:
+    _mode, _kw = "knn_adaptive", {"knn_k": 8}
+print(f"readout tier: {_mode}" + (" (selected by LOO)" if args.readout == "auto" else " (forced)"))
+w=sph_weights(pt,P,h_mode=_mode,**_kw)[0]
 v=w@Xl2; v/=np.linalg.norm(v); pi=w@Xl1; pi/=pi.sum()
 kl=pi*np.log(np.maximum(pi,1e-300)/np.maximum(ml1,1e-300))
 L2=lens_words(pick_idx(v-md)); L1=lens_words(pick_idx(kl))
