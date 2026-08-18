@@ -142,8 +142,8 @@ E={"query_location":[args.x,args.y],
    "theme_lens_L2":L2,"concentration_lens_L1":L1,
    "contributing_documents_top3":[{"doc":int(i),"weight":round(float(w[i]),3),"title":meta[i]["title"][:70]}
         for i in np.argsort(w)[::-1][:3]],
-   "mixture_entropy_H":round(float(sph_entropy(w[None],100)[0]),3),
-   "effective_contributing_documents":round(float(100**sph_entropy(w[None],100)[0]),1),
+   "mixture_entropy_H":round(float(sph_entropy(w[None],len(P))[0]),3),
+   "effective_contributing_documents":round(float(len(P)**sph_entropy(w[None],len(P))[0]),1),
    "relative_uncertainty_u":round(float(gp.rel_uncertainty(pt)[0]),3)}
 outfile = args.outfile or f"evidence_point_{args.x}_{args.y}.json"
 json.dump(E, open(outfile, "w", encoding="utf-8"), indent=1, ensure_ascii=False)

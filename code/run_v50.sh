@@ -7,6 +7,7 @@
 # パス引数は絶対パスで渡す (本スクリプトは冒頭で code/ へ移動する)。詳細は docs/USAGE_ja.md。
 # =====================================================================
 set -euo pipefail
+ORIG_PWD="$PWD"
 cd "$(dirname "$0")"
 
 QUICK=0
@@ -23,7 +24,10 @@ while [[ $# -gt 0 ]]; do
 done
 : "${DERIVED:?--derived-input required}" "${RUN_ID:?--run-id required}" "${OROOT:?--outputs-root required}"
 
-export KM_DERIVED="$(cd "$DERIVED" && pwd)"
+# 相対パスは呼び出し元ディレクトリ基準で解決する
+abspath(){ case "$1" in /*) echo "$1";; *) echo "$ORIG_PWD/$1";; esac; }
+export KM_DERIVED="$(cd "$(abspath "$DERIVED")" && pwd)"
+OROOT="$(abspath "$OROOT")"
 export KM_OUT="$OROOT/$RUN_ID"
 export KM_DATA="${KM_DATA:-$KM_OUT/work}"   # 実行ごとに分離し、成果物と同じ場所に残す
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1

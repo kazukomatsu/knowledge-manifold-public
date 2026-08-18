@@ -109,11 +109,12 @@ python3 code/make_derived_input.py \
     --input ./your_corpus.md \
     --output inputs/derived/mycorpus
 
-# 2. Run all stages. Pass ABSOLUTE paths: run_v50.sh cd's into code/ first.
+# 2. Run all stages. Relative paths are resolved against the directory you
+#    call from, so either form works.
 bash code/run_v50.sh \
-    --derived-input "$PWD/inputs/derived/mycorpus" \
+    --derived-input inputs/derived/mycorpus \
     --run-id mycorpus \
-    --outputs-root "$PWD/outputs"
+    --outputs-root outputs
 
 # 3. Validation gates (run_v50.sh runs these too and stops on failure)
 KM_OUT="$PWD/outputs/mycorpus" \
@@ -168,6 +169,8 @@ code/                 the pipeline; numbered scripts run in order, kmlib.py is s
   run_v50.sh          driver for all stages
   validate.py         15 validation gates
   verify_reference.py recompute the published metrics from data/derived/
+  make_derived_input.py     package a concatenated Markdown corpus for stage 0
+  subset_derived_input.py   cut N documents out of a packaged corpus (the N=100/200/400 probe)
 data/
   corpus_manifest.csv 100 DOIs, titles, years, clusters, map coordinates
   derived/            Gram matrix, coordinates, SVD scores, reference metric JSONs

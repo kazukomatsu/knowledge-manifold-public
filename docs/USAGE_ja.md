@@ -76,9 +76,9 @@ bash code/run_v50.sh \
     --outputs-root "$PWD/outputs"
 ```
 
-`run_v50.sh` は冒頭で `code/` へ移動するため、`--derived-input` と `--outputs-root` は
-**絶対パス**で渡します(`$PWD/` を付ける)。相対パスだと `code/` からの相対として解決され、
-入力が見つかりません。
+`run_v50.sh` は冒頭で `code/` へ移動しますが、相対パスは**呼び出し元のディレクトリ基準**で
+解決されるため、`--derived-input` と `--outputs-root` はどちらの書き方でも通ります
+(絶対パスでも可)。
 
 所要時間の目安は単一コアで 12〜20 分。測地線 34 本が大半を占めます。
 

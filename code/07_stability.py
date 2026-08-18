@@ -271,12 +271,13 @@ elif phase == "datasize":
     t_map = time.time() - t1
     X, l2n, _ = load_tfidf()
     Xl2 = (X / l2n[:, None]).astype(np.float64)
-    if Nn < 100:
+    N_full = len(Xl2)
+    if Nn < N_full:
         sub = np.load(OUT + f"/subset_idx_N{Nn}.npy")
         Pn = np.load(OUT + f"/coords_N{Nn}.npy")
         aud = json.load(open(OUT + f"/map_audit_N{Nn}.json"))
     else:
-        sub = np.arange(100)
+        sub = np.arange(N_full)
         Pn = np.load(OUT + "/coords.npy")
         aud = json.load(open(OUT + "/map_audit.json"))
     Xn = Xl2[sub]
