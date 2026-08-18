@@ -7,6 +7,7 @@ abstract: >-
   multi-metric geodesics, and exports machine-computed evidence packages for
   auditable verbalization.
 type: software
+license: MIT
 repository-code: "TODO: GitHub URL once the repository is created"
 
 # Authors, affiliations and title taken from the manuscript of 2026-08-17

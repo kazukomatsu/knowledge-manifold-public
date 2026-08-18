@@ -226,10 +226,15 @@ file has been committed.
 
 ## License
 
-**Not yet decided.** No `LICENSE` file ships, so the default is all rights
-reserved. See [`LICENSE_TODO.md`](LICENSE_TODO.md) for what needs settling —
-code license, data license, copyright holder, and the journal's software
-availability policy.
+MIT — see [`LICENSE`](LICENSE). Copyright (c) 2026 Kazuhiko Komatsu, Yoshiaki
+Kawagoe, Shigeru Obayashi and Tomonaga Okabe, the authors of the accompanying
+manuscript.
+
+One licence covers the whole repository, the derived artifacts in `data/`
+included; there is no separate data licence. It does not extend to the corpus
+itself, which is not here to license: the 100 papers are publisher-copyrighted,
+are not redistributed, and each user assembles them under their own
+subscriptions (see [`data/README.md`](data/README.md)).
 
 ## Citation
 
