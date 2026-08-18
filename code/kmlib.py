@@ -344,8 +344,13 @@ def _tie_rank(a):
 def trustworthiness_continuity(D_high, D_low, k=7):
     """T&C (Venna & Kaski)."""
     N = len(D_high)
-    rh = np.argsort(np.argsort(D_high + np.eye(N) * 1e9, axis=1), axis=1)
-    rl = np.argsort(np.argsort(D_low + np.eye(N) * 1e9, axis=1), axis=1)
+    # kind="stable" は必須 (CORRECTIONS.md #4)。ゲージ固定枠は文書を格子点に固定するため
+    # D_low には厳密なタイが生じる (100文書コーパスで34組: 例えば doc5(-1,-1) から
+    # doc51(-1,0) と doc94(0,-1) までがどちらも正確に 1.0)。既定の quicksort は不安定で、
+    # タイの順序が SIMD カーネル差 (arm64 と x86-64) で変わり、continuity_k10 が
+    # 1カウント (1.2e-5) ずれた。安定ソートでタイ順を文書番号順に固定する。
+    rh = np.argsort(np.argsort(D_high + np.eye(N) * 1e9, axis=1, kind="stable"), axis=1)
+    rl = np.argsort(np.argsort(D_low + np.eye(N) * 1e9, axis=1, kind="stable"), axis=1)
     T = 0.0; C = 0.0
     for i in range(N):
         nl = set(np.where(rl[i] < k)[0]); nh = set(np.where(rh[i] < k)[0])
@@ -368,8 +373,10 @@ def knn_preservation(D_high, D_low, k=7):
     N = len(D_high)
     p = 0.0
     for i in range(N):
-        nh = set(np.argsort(D_high[i] + np.eye(N)[i] * 1e9)[:k])
-        nl = set(np.argsort(D_low[i] + np.eye(N)[i] * 1e9)[:k])
+        # kind="stable": D_low のタイが k 番目の境界に来ると、どの文書が近傍集合に
+        # 入るかが不安定ソート次第で変わる (CORRECTIONS.md #4)。
+        nh = set(np.argsort(D_high[i] + np.eye(N)[i] * 1e9, kind="stable")[:k])
+        nl = set(np.argsort(D_low[i] + np.eye(N)[i] * 1e9, kind="stable")[:k])
         p += len(nh & nl) / k
     return p / N
 

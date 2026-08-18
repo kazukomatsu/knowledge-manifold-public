@@ -1,16 +1,19 @@
 # Corrections
 
-Three defects were found while preparing this repository for release. **All are
-fixed here.** The first two are documented with the measurement that exposed
-them, because one changes a value that appears in the manuscript and the other
-changes the orientation of every figure. The third is a provenance string that
-misdescribed how the code works; no value depends on it.
+Four defects were found while preparing this repository for release and
+publishing it. **All are fixed here.** The first two are documented with the
+measurement that exposed them, because one changes a value that appears in the
+manuscript and the other changes the orientation of every figure. The third is a
+provenance string that misdescribed how the code works. The fourth left two rank
+metrics dependent on an unstable sort, so one of them differed between CPU
+architectures; the first CI run caught it. No value depends on the third, and the
+fourth changes nothing on the reference platform.
 
-Defects 1 and 2 had both passed all 15 validation gates undetected. That is the
-common lesson:
-the gates check properties of pairwise distances and never checked either the
-uniqueness of absolute coordinates or the range of a metric that is by
-definition a fraction.
+Defects 1, 2 and 4 had all passed the 15 validation gates undetected. That is the
+common lesson: the gates check properties of pairwise distances, and never
+checked the uniqueness of absolute coordinates, the range of a metric that is by
+definition a fraction, or whether recomputing the published metrics gives the
+published numbers.
 
 ---
 
@@ -257,3 +260,61 @@ No number moves: the fields are descriptive, and no code reads them —
 `gpr_info.json`, never `implementation`. The sources are fixed too
 (`04_fields.py` writes `gpr_info.json`, `09_manifest.py` writes `manifest.json`),
 so regenerated runs record the corrected text.
+
+---
+
+## 4. Two rank metrics depended on an unstable sort
+
+**Fixed. Nothing moves on the reference platform; one metric had differed by
+1.2e-5 on another.**
+
+### The defect
+
+`trustworthiness_continuity` and `knn_preservation` ranked neighbours with
+`np.argsort`, whose default `kind="quicksort"` is not stable. The
+low-dimensional distance matrix carries exact ties — 34 adjacent pairs for the
+100-document corpus — precisely because the gauge-fixed frame pins the anchors
+to an integer lattice: document 5 at `(-1,-1)` sits at distance exactly 1.0 from
+both 51 at `(-1,0)` and 94 at `(0,-1)`. `D_high` has none; cosine distances
+between real documents are generic.
+
+An unstable sort may order tied keys however it likes, and numpy's order depends
+on the SIMD kernel it dispatches to, which differs between architectures.
+
+### What it did
+
+The first CI run exposed it. From the same shipped `gram_l2.npy` and
+`coords.npy`:
+
+```
+                  macOS arm64   Linux x86-64   published
+continuity_k10       0.879432       0.879420    0.879432
+```
+
+The gap is 1.18e-05 — exactly one count of the normalisation
+`2 / (N k (2N - 3k - 1)) = 2/169000`, i.e. one tie on a k=10 neighbourhood
+boundary resolving the other way. All 27 remaining metrics agreed to zero or
+machine epsilon, so `verify_reference.py` reproduced 27 of 28 and exited
+non-zero.
+
+k=5 and k=7 were unaffected because no tie falls on those boundaries in this
+corpus, and `knn_preservation` for the same accidental reason. Neither was safe
+by construction.
+
+### The fix
+
+`kind="stable"` on the distance argsorts in both functions, which fixes the tie
+order to the document index on every platform. On the reference platform nothing
+moves: all three k values of both metrics stay bit-identical to the shipped
+references, so no published number changes and the manuscript is untouched.
+
+This is #2 in a smaller key — a tie whose winner was left to platform-dependent
+machinery, and again invisible to the 15 gates, which never recompute the
+published metrics.
+
+### Covered by
+
+`TestTieStability` — three tests that confirm the lattice really produces ties,
+one of them on the k=3 boundary, and pin both metrics on that geometry.
+`test_e1_recomputes_to_published_values` now checks the k=10 metrics too; they
+had been covered only by the subprocess test.

@@ -18,11 +18,13 @@ This code accompanies a manuscript submitted to *Journal of Informetrics*. See
 [`CITATION.cff`](CITATION.cff).
 
 > **Read [`CORRECTIONS.md`](CORRECTIONS.md) before comparing against earlier
-> drafts.** Three defects found while preparing this release are fixed here: one
-> changes the reported kNN-preservation values (k=7: 0.504 → 0.427), one
-> re-orients every figure relative to pre-fix drafts, and one corrected a
-> provenance string that misdescribed two optimisers. No published metric other
-> than kNN preservation moves. The manuscript of 2026-08-17 already uses the
+> drafts.** Four defects found while preparing and publishing this release are
+> fixed here: one changes the reported kNN-preservation values (k=7:
+> 0.504 → 0.427), one re-orients every figure relative to pre-fix drafts, one
+> corrected a provenance string that misdescribed two optimisers, and one left
+> two rank metrics at the mercy of an unstable sort, which moved `continuity_k10`
+> by 1.2e-5 between CPU architectures. No published metric other than kNN
+> preservation moves. The manuscript of 2026-08-17 already uses the
 > post-fix gauge — its Fig. 1 places all nine anchor documents exactly where
 > `data/derived/coords.npy` does.
 
@@ -55,7 +57,7 @@ scikit-learn 1.7.2 / matplotlib 3.10.9. On that unpinned stack (verified
 ```bash
 python3.10 -m venv .venv310 && source .venv310/bin/activate
 pip install numpy scipy scikit-learn matplotlib pytest   # no pinning possible
-python3 -m pytest tests/ -v            # 32 passed
+python3 -m pytest tests/ -v            # 35 passed
 python3 code/verify_reference.py       # ALL 28 METRICS REPRODUCED
 ```
 

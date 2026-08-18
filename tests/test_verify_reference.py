@@ -40,7 +40,10 @@ def test_e1_recomputes_to_published_values():
     audit = json.load(open(os.path.join(DATA, "map_audit.json")))
     ref = json.load(open(os.path.join(DATA, "e1_distance_preservation.json")))
     got = compute_e1(G, P, audit["kappa"], audit["alpha"])
-    for key in ("spearman", "knn_preservation_k7", "trustworthiness_k7", "continuity_k7"):
+    # continuity_k10 is here because it is the metric that broke under an
+    # unstable sort (CORRECTIONS.md #4) and only the subprocess test caught it.
+    for key in ("spearman", "knn_preservation_k7", "trustworthiness_k7", "continuity_k7",
+                "knn_preservation_k10", "trustworthiness_k10", "continuity_k10"):
         assert got[key] == pytest.approx(ref[key], abs=1e-12), key
 
 

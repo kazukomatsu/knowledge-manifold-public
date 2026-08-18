@@ -282,3 +282,50 @@ class TestMetrics:
         t, c = trustworthiness_continuity(D, D, k=7)
         assert t == pytest.approx(1.0, abs=1e-12)
         assert c == pytest.approx(1.0, abs=1e-12)
+
+
+class TestTieStability:
+    """Regression tests for CORRECTIONS.md #4.
+
+    The gauge-fixed frame pins anchors to an exact lattice, so the
+    low-dimensional distance matrix carries exact ties — 34 of them for the
+    100-document corpus. numpy's default quicksort is unstable, and its order
+    for tied keys differs between SIMD kernels: the same shipped artifacts gave
+    continuity_k10 = 0.879432 on macOS arm64 and 0.879420 on Linux x86-64, one
+    count of 2/(N k (2N-3k-1)) apart. The rank and neighbour computations
+    therefore sort with kind="stable", which fixes the tie order to the document
+    index on every platform. These tests pin the outcome so a regression shows
+    up wherever the suite runs.
+    """
+
+    @staticmethod
+    def lattice():
+        """The 3x3 anchor layout: nine points on an exact integer lattice."""
+        pts = np.array([[x, y] for y in (-1.0, 0.0, 1.0) for x in (-1.0, 0.0, 1.0)])
+        return np.linalg.norm(pts[:, None] - pts[None], axis=2)
+
+    @staticmethod
+    def high_dim():
+        rng = np.random.default_rng(12)
+        A = rng.uniform(0, 1, (9, 6))
+        return cosine_dist_matrix(A / np.linalg.norm(A, axis=1, keepdims=True))
+
+    def test_lattice_geometry_really_has_exact_ties(self):
+        """Without exact ties the tests below would prove nothing."""
+        D = self.lattice()
+        N = len(D)
+        masked = D + np.eye(N) * 1e9
+        pairs = sum(int((np.diff(np.sort(masked[i])) == 0).sum()) for i in range(N))
+        at_k3 = sum(1 for i in range(N)
+                    if np.sort(masked[i])[2] == np.sort(masked[i])[3])
+        assert pairs == 34
+        assert at_k3 >= 1, "no tie on the k=3 boundary: the pin would be insensitive"
+
+    def test_trustworthiness_continuity_pinned_on_tie_heavy_geometry(self):
+        t, c = trustworthiness_continuity(self.high_dim(), self.lattice(), k=3)
+        assert t == pytest.approx(0.48148148148148151, abs=1e-15)
+        assert c == pytest.approx(0.54629629629629628, abs=1e-15)
+
+    def test_knn_preservation_pinned_on_tie_heavy_geometry(self):
+        p = knn_preservation(self.high_dim(), self.lattice(), k=3)
+        assert p == pytest.approx(0.29629629629629628, abs=1e-15)
