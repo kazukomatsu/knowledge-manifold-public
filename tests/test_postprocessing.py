@@ -381,24 +381,19 @@ class TestGridScan:
         assert A.files == B.files and all(np.array_equal(A[k], B[k]) for k in A.files)
 
     def test_matches_make_evidence_with_the_same_settings(self, run_dir, scan01, tmp_path):
-        """make_evidence.py --readout global --topk 15 must see what the scan saw at that point.
+        """make_evidence.py --readout global --topk 15 must give what the scan gave at that point.
 
-        make_evidence.py keeps each document's words in a set, so when two words tie as the
-        representative of a merged term (same df, same length) Python's per-process string hash
-        picks one. It is therefore run under several PYTHONHASHSEED values: where it agrees with
-        itself the scan must give the same word; where it does not, the scan (which orders words)
-        must give a word of the same tie class, and df and source documents must agree throughout.
+        Both select with evidence_lib.py, so terms, their order, df, source documents and the top
+        contributing documents are identical — including at exact ties and under any PYTHONHASHSEED.
+        (-1.0, -0.5) has equal weights among its top three documents on this map.
         """
         details = json.load(open(os.path.join(scan01, "k5_grid_scan_details.json")))
         V = np.load(os.path.join(scan01, "k5_grid_scan_values.npz"))
         row = {k: i for i, k in enumerate(details)}
-        strip = lambda recs: [(e["df"], [s["doc"] for s in e.get("source_docs", [])]) for e in recs]
-        corpus_words = {w for d in json.load(open(os.path.join(run_dir, "corpus", "docs_clean.json")))
-                        for w in d["text"].split()}
-        for x, y in ((-0.5, 0.0), (0.3, 0.7), (1.0, -1.0)):
+        strip = lambda recs: [(e["term"], e["df"], [s["doc"] for s in e.get("source_docs", [])]) for e in recs]
+        for x, y in ((-0.5, 0.0), (0.3, 0.7), (1.0, -1.0), (-1.0, -0.5)):
             key = f"{x:.1f},{y:.1f}"
             d, i = details[key], row[key]
-            evs = []
             for seed in ("0", "1", "2", "3"):
                 ev_path = str(tmp_path / f"ev_{key}_{seed}.json")
                 p = subprocess.run([sys.executable, os.path.join(CODE, "make_evidence.py"), "--x", str(x),
@@ -406,19 +401,13 @@ class TestGridScan:
                                     "--code", CODE, "--readout", "global", "--topk", "15", "--outfile", ev_path],
                                    capture_output=True, text=True, env=dict(os.environ, PYTHONHASHSEED=seed))
                 assert p.returncode == 0, p.stderr
-                evs.append(json.load(open(ev_path)))
-            for lens in ("theme_lens_L2", "concentration_lens_L1"):
-                assert all(strip(ev[lens]) == strip(d[lens]) for ev in evs), (key, lens)
-                for pos, e in enumerate(d[lens]):
-                    seen = {ev[lens][pos]["term"] for ev in evs}
-                    if len(seen) == 1:
-                        assert e["term"] in seen, (key, lens, pos)
-                    else:
-                        assert all(len(t) == len(e["term"]) for t in seen), (key, lens, pos, seen)
-                        assert e["term"] in corpus_words, (key, lens, pos)
-            ev = evs[0]
-            assert [c["doc"] for c in d["contributing_documents_top10"][:3]] == \
-                   [c["doc"] for c in ev["contributing_documents_top3"]]
+                ev = json.load(open(ev_path))
+                for lens in ("theme_lens_L2", "concentration_lens_L1"):
+                    # make_evidence.py lists source_docs also for df = 0; the scan only for 1 <= df <= 3
+                    assert strip(d[lens]) == [(t, n, docs) if n else (t, n, []) for t, n, docs in strip(ev[lens])], \
+                        (key, seed, lens)
+                assert [c["doc"] for c in d["contributing_documents_top10"][:3]] == \
+                       [c["doc"] for c in ev["contributing_documents_top3"]], (key, seed)
             # make_evidence.py rounds to 3 decimals (N_eff to 1), so the full-precision value is within half a unit
             assert abs(V["H_field"][i] - ev["mixture_entropy_H"]) <= 5e-4 + 1e-12
             assert abs(V["N_eff"][i] - ev["effective_contributing_documents"]) <= 0.05 + 1e-9

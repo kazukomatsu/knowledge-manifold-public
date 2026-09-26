@@ -54,8 +54,10 @@ def _texts(topic_of, rng, seed):
     return texts
 
 
-def build_run(root, n_docs=16, seed=0, n_clusters=5):
-    """Write a synthetic run under root/run and return its KM_OUT path."""
+def build_run(root, n_docs=16, seed=0, n_clusters=5, max_features=250000):
+    """Write a synthetic run under root/run and return its KM_OUT path.
+
+    max_features caps the n-gram vocabulary as 02_tfidf_sklearn.py does (default: the same cap)."""
     from sklearn.feature_extraction.text import TfidfVectorizer
     rng = np.random.default_rng(seed)
     out = os.path.join(str(root), "run")
@@ -80,7 +82,7 @@ def build_run(root, n_docs=16, seed=0, n_clusters=5):
 
     # stage 1, as 02_tfidf_sklearn.py
     vec = TfidfVectorizer(analyzer="char_wb", ngram_range=(4, 7), sublinear_tf=True,
-                          max_features=250000, min_df=1, norm=None, lowercase=False)
+                          max_features=max_features, min_df=1, norm=None, lowercase=False)
     X = np.asarray(vec.fit_transform(texts).todense(), dtype=np.float32)
     np.save(os.path.join(work, "X_raw.npy"), X)
     l2n = np.linalg.norm(X, axis=1)

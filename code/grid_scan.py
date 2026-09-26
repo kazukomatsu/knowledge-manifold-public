@@ -14,7 +14,7 @@
   計量      g_ab = <d_a v, d_b v> (L2 場, 中心差分 delta), 固有値 lam1 >= lam2, 主方向 e1,
             dirgrad = sqrt(lam), grad_norm = sqrt(tr g)
   フラグ    lam2_clipped, e1_ill_defined (主方向が数値的に定まらない), metric_kink (h が折れる点)
-語彙 (--no-words で省略) は make_evidence.py と同じ機構で n-gram を語に復元して
+語彙 (--no-words で省略) は make_evidence.py と共通の evidence_lib.py (同点規則も同じ) で n-gram を語に復元して
 details.json に書く。verbalization_50w 列は空欄で出す (文章化は LLM 側の別作業)。
 
 usage:
@@ -34,7 +34,6 @@ import csv
 import json
 import os
 import pickle
-import re
 import sys
 import time
 
@@ -42,7 +41,8 @@ import numpy as np
 
 CODE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, CODE)
-from kmlib import GPR, L2Field, load_stoplist, sph_entropy, sph_weights, term_ok
+from evidence_lib import CANDIDATE_POOL, WordResolver, pick_ngrams, rank_documents
+from kmlib import GPR, L2Field, load_stoplist, sph_entropy, sph_weights
 from postproc_lib import (ArtifactError, check_run, load_docs_clean, load_labels, load_metadata,
                           load_vocab, provenance, refuse_overwrite, refuse_repo_data, rel_or_none,
                           require_files, run_cli, sha256_file, write_json)
@@ -53,7 +53,6 @@ MIN_DOCS = 9            # d_k8 は 8 番目, H_field_adaptive の h は 9 番目
 PROB_SUM_ATOL = 1e-9    # SPH 重みとクラスタ確率の和 = 1 の検査 (原作の assert と同じ)
 EIG_NEG_RTOL = 1e-12    # lam2 < 0 でも |lam2| <= 1e-12 lam1 なら丸め誤差として 0 に切る
 EIG_GAP_RTOL = 1e-3     # (lam1 - lam2) / lam1 がこれ未満なら主方向は数値的に定まらない
-CANDIDATE_POOL = 1500   # レンズ語の候補 n-gram 数 (make_evidence.py と同じ)
 TOPK_DOCS = 10
 
 
@@ -261,107 +260,25 @@ def numeric_fields(Q, R, delta):
 
 # ---------------------------------------------------------------- 語彙
 class LensWords:
-    """make_evidence.py と同じ語解決 (n-gram 選択 -> 出典テキスト中の語へ復元 -> 語を共有する項目を併合).
+    """evidence_lib の語解決を、grid_scan の出力形式 (term, df, df が 1〜3 なら source_docs) で包む.
 
-    違いは 1 点: 各文献の語を整列して持つ。make_evidence.py と原作は語を set で持ち、その反復順
-    (文字列 hash は process ごとに乱数化される) が同数の代表語の選び方に効いていた。
-    n-gram 候補の順位づけ (argpartition + argsort) は make_evidence.py と同一に保つ。
-    同じスコアの n-gram の並びは numpy のソート実装に依存するため、同一環境では再実行で一致
-    するが、numpy のビルドや CPU が違うと語が入れ替わりうる (docs/postprocessing_ja.md)。
+    n-gram の選び方・語の併合・同点の規則は make_evidence.py と共通 (evidence_lib.py)。同じ
+    readout (global) と語数なら、make_evidence.py と同じ語・df・出典文献になる。
     """
 
     def __init__(self, vocab, stoplist, docs, meta):
         self.vocab, self.stop, self.meta = vocab, stoplist, meta
-        self.tok = [sorted(set(re.findall(r"[a-z][a-z\-]{2,}", d["text"].lower()))) for d in docs]
-        self._cache = {}
-
-    @staticmethod
-    def _match(w2, frag):
-        lead, trail, s = frag.startswith(" "), frag.endswith(" "), frag.strip()
-        return (w2 == s) if (lead and trail) else (w2.startswith(s) if lead else (w2.endswith(s) if trail else (s in w2)))
-
-    def words_for(self, frag_raw):
-        if frag_raw not in self._cache:
-            # _match と同じ判定を内側のループに展開したもの (1 語ごとに関数を呼ぶと約 2 倍遅い)
-            lead, trail, s = frag_raw.startswith(" "), frag_raw.endswith(" "), frag_raw.strip()
-            hits = {}
-            for di, ts in enumerate(self.tok):
-                if lead and trail:
-                    found = [w2 for w2 in ts if w2 == s]
-                elif lead:
-                    found = [w2 for w2 in ts if w2.startswith(s)]
-                elif trail:
-                    found = [w2 for w2 in ts if w2.endswith(s)]
-                else:
-                    found = [w2 for w2 in ts if s in w2]
-                for w2 in found:
-                    hits.setdefault(w2, set()).add(di)
-            self._cache[frag_raw] = hits
-        return self._cache[frag_raw]
+        self.resolver = WordResolver(vocab, docs)
 
     def pick_idx(self, sc, k):
-        pool = min(CANDIDATE_POOL, len(sc))
-        cand = np.argpartition(sc, -pool)[-pool:]
-        cand = cand[np.argsort(sc[cand])[::-1]]
-        out = []
-        for c in cand:
-            s = self.vocab[c].strip()
-            if not term_ok(s, self.stop):
-                continue
-            if any(s in x or x in s for x, _ in out):
-                continue
-            out.append((s, int(c)))
-            if len(out) >= k:
-                break
-        return out
+        return pick_ngrams(sc, self.vocab, self.stop, k)
 
     def lens_words(self, idx_list):
-        entries = [{"frags": [s], "raw": [self.vocab[c]], "words": self.words_for(self.vocab[c])}
-                   for s, c in idx_list]
-        nE = len(entries)
-        par = list(range(nE))
-
-        def find(x):
-            while par[x] != x:
-                par[x] = par[par[x]]
-                x = par[x]
-            return x
-
-        def rep_of(e):
-            return max(e["words"], key=lambda w2: len(e["words"][w2])) if e["words"] else e["frags"][0]
-
-        for i in range(nE):
-            for j in range(i + 1, nE):
-                A, B = entries[i], entries[j]
-                share = set(A["words"]) & set(B["words"])
-                ra, rb = rep_of(A), rep_of(B)
-                morph = len(ra) >= 4 and len(rb) >= 4 and (ra.startswith(rb) or rb.startswith(ra))
-                if share or morph:
-                    par[find(i)] = find(j)
-        groups = {}
-        for i in range(nE):
-            groups.setdefault(find(i), []).append(entries[i])
-        merged = {}
-        for gArr in groups.values():
-            allw, frs, rawfr = {}, [], []
-            for e in gArr:
-                frs += e["frags"]
-                rawfr += e["raw"]
-                for w2, ds in e["words"].items():
-                    allw.setdefault(w2, set()).update(ds)
-            if not allw:
-                merged["?" + frs[0]] = set()
-                continue
-            thr = max(1, (len(rawfr) + 1) // 2)
-            keep = {w2: d2 for w2, d2 in allw.items()
-                    if sum(self._match(w2, f2) for f2 in rawfr) >= thr} or allw
-            rep = max(keep, key=lambda w2: (len(keep[w2]), -len(w2)))
-            merged[rep] = set().union(*keep.values())
         out = []
-        for key, docs in merged.items():
-            rec = {"term": key.lstrip("?"), "df": len(docs)}
-            if 0 < len(docs) <= 3:
-                rec["source_docs"] = [{"doc": int(d), "title": self.meta[d]["title"][:60]} for d in sorted(docs)]
+        for g in self.resolver.resolve(idx_list):
+            rec = {"term": g["term"], "df": len(g["docs"])}
+            if 0 < rec["df"] <= 3:
+                rec["source_docs"] = [{"doc": int(d), "title": self.meta[d]["title"][:60]} for d in g["docs"]]
             out.append(rec)
         return out
 
@@ -390,7 +307,7 @@ def word_details(Q, keys, gix, F, R, topk_l2, topk_l1, progress=None):
             raise ArtifactError(f"non-finite L1 field vector at {keys[i]}")
         pi /= pi.sum()
         kl = pi * np.log(np.maximum(pi, 1e-300) / np.maximum(ml1, 1e-300))
-        top = np.argsort(wi)[::-1][:TOPK_DOCS]      # make_evidence.py の寄与文献と同じ並べ方
+        top = rank_documents(wi, TOPK_DOCS)         # 重みの降順、同じ重みは doc_id の昇順
         details[keys[i]] = {
             "grid_index": [int(gix[0][i]), int(gix[1][i])],
             "theme_lens_L2": lens.lens_words(lens.pick_idx(v - md, topk_l2)),
@@ -526,7 +443,11 @@ def main(argv=None):
                      "custom_labels": a.custom_labels,
                      "words": words,
                      "lens": (f"L2 top{a.topk_l2} / L1 top{a.topk_l1}; same word resolution as make_evidence.py; "
-                              f"candidate pool {CANDIDATE_POOL} n-grams" if words else None),
+                              f"candidate pool {CANDIDATE_POOL} n-grams (or the vocabulary size if smaller)"
+                              if words else None),
+                     "tie_rules": ("n-grams by score descending then feature index ascending; contributing "
+                                   "documents by weight descending then doc_id ascending; words by document "
+                                   "count, then length (merged terms), then alphabetically" if words else None),
                      "readout_note": "all fields use the global SPH rule; make_evidence.py defaults to the "
                                      "LOO-selected readout tier, so compare with --readout global"},
         "tolerances": {"prob_sum_atol": PROB_SUM_ATOL, "eig_neg_rtol": EIG_NEG_RTOL,

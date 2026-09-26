@@ -49,7 +49,8 @@ gp.L = md["L"]; gp.noise = md["noise"]
 _STOP = load_stoplist()
 def _pick_idx(scores, k):
     """上位候補から TeX/数式断片・著者名断片(term_stoplist.txt)と重複n-gramを除いて返す."""
-    cand = np.argpartition(scores, -600)[-600:]
+    pool = min(600, len(scores))            # 語彙が 600 より少ない run でも範囲外にしない
+    cand = np.argpartition(scores, -pool)[-pool:]
     cand = cand[np.argsort(scores[cand])[::-1]]
     words, idxs = [], []
     for i in cand:
