@@ -57,7 +57,7 @@ scikit-learn 1.7.2 / matplotlib 3.10.9. On that unpinned stack (verified
 ```bash
 python3.10 -m venv .venv310 && source .venv310/bin/activate
 pip install numpy scipy scikit-learn matplotlib pytest   # no pinning possible
-python3 -m pytest tests/ -v            # 35 passed
+python3 -m pytest tests/ -v            # 118 passed (2026-09-26; 35 before the post-processing tests)
 python3 code/verify_reference.py       # ALL 28 METRICS REPRODUCED
 ```
 
@@ -162,6 +162,72 @@ Terms in the package are whole words, deterministically reconstructed from the
 corpus text rather than raw character n-grams, so `compton` arrives as a word
 and not as the fragment `ompto`.
 
+### Post-processing a finished run
+
+Four tools work on a completed run without re-running the pipeline or touching
+any of its artifacts; none calls a language model. They were contributed by a
+co-author and adapted here (provenance and adoption decisions:
+[`docs/intake_2026-09_coauthor_tools.md`](docs/intake_2026-09_coauthor_tools.md);
+full guide in Japanese: [`docs/postprocessing_ja.md`](docs/postprocessing_ja.md)).
+
+```bash
+# cluster column joined onto the map coordinates (by doc_id) -> coordinates_2d_clusters.csv
+python3 code/add_cluster_to_csv.py --run outputs/mycorpus
+
+# the same fixed map clustered at other k -> outputs/mycorpus/recluster/
+python3 code/recluster.py --out outputs/mycorpus --k 4 6 7
+
+# every grid point of [-1,1]^2: gaps, cluster mixing, support, GPR uncertainty,
+# metric tensor eigen-analysis, lens words -> outputs/mycorpus/grid_scan/k5_dx0.1_l2-15_l1-15/
+python3 code/grid_scan.py --out outputs/mycorpus --topk-l2 15 --topk-l1 15
+# 41 x 41 = 1681 points -> outputs/mycorpus/grid_scan/k5_dx0.05_l2-15_l1-15/
+python3 code/grid_scan.py --out outputs/mycorpus --dx 0.05 --topk-l2 15 --topk-l1 15
+
+# heat maps and a provisional candidate list from a scan
+python3 code/grid_viz.py --scan outputs/mycorpus/grid_scan/k5_dx0.1_l2-15_l1-15 --out outputs/mycorpus
+```
+
+`recluster.py` uses the pipeline's own definition (k-means on the ten leading
+SVD scores, seed 0) and numbers clusters by size; at k=5 it returns the standard
+partition renumbered, and with `--no-terms` it runs on the shipped
+`data/derived` alone (give `--outdir`: nothing is written inside `data/`).
+Cluster numbers are specific to a run and a k.
+
+All four tools refuse to overwrite earlier output without `--force` and list
+every missing input instead of looking for it elsewhere. `grid_scan.py` and
+`recluster.py` check that the artifacts they are given belong to one run —
+coordinates against `coordinates_2d.csv` and the hashes in `manifest.json`, the
+GPR's training points and scale, the SVD and the feature matrix against the Gram
+matrix, each document's top n-grams against its text, the metadata's character
+counts against the text, and (for the scan) the cluster labels against the run's
+own k-means partition, with `--custom-labels` to use other labels deliberately —
+and record what could be checked in their metadata. `add_cluster_to_csv.py`
+checks coordinates and labels against the run when given `--run` and prints the
+result; `grid_viz.py` checks the coordinates and labels it overlays against the
+hashes the scan recorded.
+
+`grid_scan.py` keeps the co-author's definitions of every quantity. It records
+the grid, settings, tolerances, input hashes and library versions in
+`k5_grid_scan_meta.json` and keeps timing in a separate `*_runinfo.json`; rerun
+in another process, its CSV, details and meta are byte-identical and its arrays
+equal. Three flags mark where a number should not be
+over-read: `lam2_clipped` (a rounding-level negative eigenvalue set to 0),
+`e1_ill_defined` (near-isotropic metric, no principal direction) and
+`metric_kink` (the lines x = 0 and y = 0, where the global SPH smoothing length
+h(P) = max distance / 1.98 has a kink: there the central difference tends to the
+mean of the two one-sided derivatives, and the metric is built from inner
+products of that mean, which in general is not the mean of the two one-sided
+metrics). The same smoothing length, fixed by the corner anchors rather than by
+the corpus, is narrowest on those lines, so the cross-shaped dip they show in
+`H_field` and `N_eff` should be read apart from corpus-specific structure. The
+`verbalization_50w` column is left empty:
+prose is written afterwards, outside the pipeline, by handing
+`make_evidence.py` output for a chosen coordinate to a model together with
+`docs/verbalization_protocol.md`. The scan's fields all use the global rule, so
+compare its lens words with `make_evidence.py --readout global --topk 15`. The
+candidate list is a screening under provisional percentile thresholds, not an
+optimum, a finding or a Discovery Score.
+
 ## Repository layout
 
 ```
@@ -171,6 +237,10 @@ code/                 the pipeline; numbered scripts run in order, kmlib.py is s
   verify_reference.py recompute the published metrics from data/derived/
   make_derived_input.py     package a concatenated Markdown corpus for stage 0
   subset_derived_input.py   cut N documents out of a packaged corpus (the N=100/200/400 probe)
+  add_cluster_to_csv.py     post-processing: cluster column on the coordinate CSV
+  recluster.py              post-processing: re-cluster a finished run at other k
+  grid_scan.py, grid_viz.py post-processing: full grid scan of a finished map, heat maps
+  postproc_lib.py           shared input checks for the four post-processing tools
 data/
   corpus_manifest.csv 100 DOIs, titles, years, clusters, map coordinates
   derived/            Gram matrix, coordinates, SVD scores, reference metric JSONs
@@ -179,6 +249,8 @@ docs/
   USAGE_ja.md         detailed walkthrough (Japanese)
   verbalization_protocol.md      the binding protocol for the verbalization step
   example_evidence_point.json    what make_evidence.py produces, for reference
+  postprocessing_ja.md           guide to the post-processing tools (Japanese)
+  intake_2026-09_coauthor_tools.md  what was taken from the co-author's archives, and why
 tests/                pytest suite; synthetic data only, no corpus text
 ```
 
@@ -225,6 +297,15 @@ matrix by 1e-14 twelve times and asserts the anchor assignment never moves),
 verification of the Gram-matrix identities that `verify_reference.py` relies on,
 and integration tests that the shipped artifacts still reproduce the shipped
 reference values and that no corpus-derived file has crept into `data/`.
+
+`tests/test_postprocessing.py` covers the post-processing tools on a complete
+but tiny run built from invented words (`tests/synthetic_run.py`, same TF-IDF,
+clustering and GPR code as the pipeline): doc_id joins and their failure modes,
+re-clustering at several k with the inputs left byte-identical, the published
+k=5 partition recovered from `data/derived`, the 441- and 1681-point grids
+one-to-one across CSV, details and arrays, the metric-tensor identities and a
+finite-distance check, the kink flag, byte-identical reruns under different
+`PYTHONHASHSEED`, and agreement with `make_evidence.py` at matched settings.
 
 CI runs the suite on Python 3.11 and additionally asserts that no corpus-derived
 file has been committed.

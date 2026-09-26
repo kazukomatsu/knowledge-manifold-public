@@ -29,7 +29,7 @@ pip install -r requirements-optional.txt   # 任意
 **Python 3.10 について。** `requirements.txt` の固定版は 3.10 では解決できません(`numpy==2.4.6` が
 Requires-Python >=3.11、3.10 の上限は numpy 2.2.6)。3.10 で入る最新スタック
 (numpy 2.2.6 / scipy 1.15.3 / sklearn 1.7.2 / matplotlib 3.10.9、`umap-learn==0.5.12` も可)では
-2026-08-18 実測で `pytest tests/` 35 passed、`code/verify_reference.py` が 28 指標すべて再現しました。
+2026-08-18 実測で `pytest tests/` 35 passed、`code/verify_reference.py` が 28 指標すべて再現しました(後処理ツールのテストを加えた 2026-09-26 の再実測では 118 passed、28 指標再現)。
 `verify_reference.py` は同梱 Gram 行列を読むだけで `X @ X.T` を再計算しないため、版固定が守っている
 箇所を通りません。したがって**コーパス無しの照合は 3.10 でも可**です。3.10 でできないのは、
 コーパスから公開座標を再構築することです(それには 3.11.15 固定環境が必要)。
@@ -227,6 +227,48 @@ written    : evidence_point_-0.5_0.0.json
 ファイルをマウントできるツール(エディタ統合や CLI エージェント等)では、生成後にその場で
 語の使われ方を検算できます。証拠に無い語が混じっていないか、df≤3 の語に出典が付いているかを
 続けて確認させられます。
+
+## 7. 後処理(クラスタ列・再クラスタリング・全格子点走査)
+
+完成した run に対して、マップを作り直さずに追加の集計ができます。どれも入力を書き換えず、
+既存の出力を上書きせず(作り直すときは `--force`)、必要な成果物が無ければ不足を並べて失敗します。
+LLM は呼びません。詳細は [`postprocessing_ja.md`](postprocessing_ja.md)、取り込みの経緯は
+[`intake_2026-09_coauthor_tools.md`](intake_2026-09_coauthor_tools.md) にあります。
+
+```bash
+# クラスタ列を付けた座標 CSV (doc_id で結合) -> outputs/mycorpus/coordinates_2d_clusters.csv
+python3 code/add_cluster_to_csv.py --run outputs/mycorpus
+
+# マップを固定したまま k を変える -> outputs/mycorpus/recluster/
+python3 code/recluster.py --out outputs/mycorpus --k 4 6 7
+
+# 全格子点走査 (441 点) -> outputs/mycorpus/grid_scan/k5_dx0.1_l2-15_l1-15/
+python3 code/grid_scan.py --out outputs/mycorpus --topk-l2 15 --topk-l1 15
+# 細かい格子 (1681 点) / 数値のみ
+python3 code/grid_scan.py --out outputs/mycorpus --dx 0.05 --topk-l2 15 --topk-l1 15
+python3 code/grid_scan.py --out outputs/mycorpus --no-words
+
+# ヒートマップと候補点一覧
+python3 code/grid_viz.py --scan outputs/mycorpus/grid_scan/k5_dx0.1_l2-15_l1-15 --out outputs/mycorpus
+```
+
+- 再クラスタリングはパイプラインと同じ定義(SVD 先頭 10 次元の k-means、seed 0)で、番号は
+  文献数の多い順です。k=5 は標準ラベルと同じ分割になります。クラスタ番号は run と k に固有で、
+  別の run・別の k の番号とは対応しません。`--no-terms` なら同梱の `data/derived` だけで動きます
+  (`data/` の中には書けないので `--outdir` で外を指定)。
+- 渡された成果物が同じ run のものか(座標 CSV・manifest の hash・GPR・SVD・特徴行列・本文・
+  ラベルのつながり)を照合し、食い違えば止まります。意図して別のラベルを使うときは
+  `--custom-labels`。照合の結果は出力の meta に残ります。
+- 格子走査の `--dx` は 2/dx が整数になる値だけ受けます。x = 0, y = 0 の線上の点では global 則の
+  平滑化長が折れるため、中心差分は左右の片側微分の平均に近づき、計量はその平均した微分の内積から
+  作られます(片側計量の平均とは一般に異なる。`metric_kink` 列)。これらの点と `e1_ill_defined`
+  の点の主方向は解釈しないでください。`H_field`・`N_eff` の図の十字状の谷は、平滑化長の定義に
+  よる影響とコーパス固有の構造とを切り分けて読んでください。
+- CSV の `verbalization_50w` 列は空欄です。点の文章化は、座標を選んで第 6 節の
+  `make_evidence.py` と `verbalization_protocol.md` で行います。走査の語と揃えるには
+  `--readout global --topk 15` を付けます。
+- 候補点一覧は暫定のパーセンタイル条件によるスクリーニングで、最適解・研究上の発見・
+  最終的な Discovery Score ではありません。
 
 ## 補足
 
