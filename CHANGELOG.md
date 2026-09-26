@@ -56,6 +56,10 @@ on the published numbers, are in [`CORRECTIONS.md`](CORRECTIONS.md).
 - `make_evidence.py` fails on a vocabulary smaller than 1500 n-grams.
 - The global SPH smoothing length h(P) = max distance / 1.98 has a kink on the
   lines x = 0 and y = 0 (the farthest document is a corner anchor and changes
-  there), so a finite-difference metric on those lines is an average of one-sided
-  derivatives. `grid_scan.py` flags such points (`metric_kink`); the same applies
-  to the metric grid of `04_fields.py grid`.
+  there). On those lines a central difference tends to the mean of the two
+  one-sided derivatives, and a metric built from it is the inner product of that
+  mean, which in general differs from the mean of the one-sided metrics.
+  `grid_scan.py` flags such points (`metric_kink`); the same applies to the
+  metric grid of `04_fields.py grid`. Because h there is set by the corner
+  anchors, not by the corpus, the cross-shaped dip it leaves in `H_field` and
+  `N_eff` has to be separated from corpus-specific structure when reading them.

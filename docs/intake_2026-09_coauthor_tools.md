@@ -95,7 +95,9 @@ ea5e5b7577342dce, `X_raw.npy` f632567842f09dbd, `gpr_model.pkl` 1ce55c92fa39c497
 すべて対応し、2 回目の判定は APPROVED(重大な指摘なし)。2 回目に残った軽微な点(data/ の
 下を指す symlink 経由の書き込み、manifest の無い run での文献一覧の差し替え、`--help` の既定
 出力先、速度低下の原因の記述、有限距離の符号別の最大値、README の照合範囲の書き方)も
-commit 前に直した(3 回目のレビューはしていない)。
+commit 前に直した。これらの修正と、その後の数理説明の修正(折れ点での計量は片側微分の平均の内積で
+あって片側計量の平均ではないこと、H_field・N_eff の十字状の谷を平滑化長の定義による影響として
+切り分けて読むこと)は、push 前に別 context のレビューにかけ、対象 commit と結果を PR に記録する。
 
 1. 別 run の `corpus_metadata.csv`・`docs_clean.json`・ラベルを混ぜても検出できないのに、文書では
    検査すると書いていた → 座標 CSV・manifest の hash・SVD と Gram・X_raw と Gram・本文と X_raw・

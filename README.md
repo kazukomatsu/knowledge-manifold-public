@@ -214,8 +214,13 @@ equal. Three flags mark where a number should not be
 over-read: `lam2_clipped` (a rounding-level negative eigenvalue set to 0),
 `e1_ill_defined` (near-isotropic metric, no principal direction) and
 `metric_kink` (the lines x = 0 and y = 0, where the global SPH smoothing length
-h(P) = max distance / 1.98 has a kink, so the finite-difference metric is an
-average of one-sided derivatives). The `verbalization_50w` column is left empty:
+h(P) = max distance / 1.98 has a kink: there the central difference tends to the
+mean of the two one-sided derivatives, and the metric is built from inner
+products of that mean, which in general is not the mean of the two one-sided
+metrics). The same smoothing length, fixed by the corner anchors rather than by
+the corpus, is narrowest on those lines, so the cross-shaped dip they show in
+`H_field` and `N_eff` should be read apart from corpus-specific structure. The
+`verbalization_50w` column is left empty:
 prose is written afterwards, outside the pipeline, by handing
 `make_evidence.py` output for a chosen coordinate to a model together with
 `docs/verbalization_protocol.md`. The scan's fields all use the global rule, so

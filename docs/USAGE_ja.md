@@ -259,9 +259,11 @@ python3 code/grid_viz.py --scan outputs/mycorpus/grid_scan/k5_dx0.1_l2-15_l1-15 
 - 渡された成果物が同じ run のものか(座標 CSV・manifest の hash・GPR・SVD・特徴行列・本文・
   ラベルのつながり)を照合し、食い違えば止まります。意図して別のラベルを使うときは
   `--custom-labels`。照合の結果は出力の meta に残ります。
-- 格子走査の `--dx` は 2/dx が整数になる値だけ受けます。x = 0, y = 0 の線上の点は、global 則の
-  平滑化長が折れるため計量が片側微分の平均になります(`metric_kink` 列)。主方向は
-  `e1_ill_defined` の点と合わせて解釈しないでください。
+- 格子走査の `--dx` は 2/dx が整数になる値だけ受けます。x = 0, y = 0 の線上の点では global 則の
+  平滑化長が折れるため、中心差分は左右の片側微分の平均に近づき、計量はその平均した微分の内積から
+  作られます(片側計量の平均とは一般に異なる。`metric_kink` 列)。これらの点と `e1_ill_defined`
+  の点の主方向は解釈しないでください。`H_field`・`N_eff` の図の十字状の谷は、平滑化長の定義に
+  よる影響とコーパス固有の構造とを切り分けて読んでください。
 - CSV の `verbalization_50w` 列は空欄です。点の文章化は、座標を選んで第 6 節の
   `make_evidence.py` と `verbalization_protocol.md` で行います。走査の語と揃えるには
   `--readout global --topk 15` を付けます。

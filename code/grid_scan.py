@@ -194,9 +194,11 @@ def eigen_analysis(g):
 def metric_kink(Q, P, delta, rtol=1e-12):
     """global SPH の h(P) = max_i |P - p_i| / 1.98 が中心差分のステンシル内で滑らかでない点.
 
-    最遠の文献が入れ替わる (または同距離で並ぶ) 所で h は折れ、場 v(P) の微分が左右で食い違う。
-    そこでは中心差分の g は片側微分の平均で、delta を変えると O(delta) で動き、主方向も意味を
-    持たない。隅の 4 点はアンカーで固定されているので、どの run でも x = 0 と y = 0 の線上が該当する。
+    最遠の文献が入れ替わる (または同距離で並ぶ) 所で h は折れ、場 v(P) の左右の片側微分が一致しない。
+    中心差分は delta -> 0 で片側微分の平均に近づき (誤差 O(delta))、g はその平均した微分どうしの
+    内積から作られる。これは左右の片側計量の平均とは一般に異なり (折れを横切る成分では
+    |d+v - d-v|^2 / 4 だけ小さい)、主方向も意味を持たない。隅の 4 点はアンカーで固定され、ほかの
+    文献は箱拘束で内側にあるので、どの run でも x = 0 と y = 0 の線上が該当する。
     """
     def farthest(Qs):
         d = np.linalg.norm(Qs[:, None, :] - P[None, :, :], axis=2)
@@ -534,9 +536,10 @@ def main(argv=None):
                                     "numerically determined; do not interpret theta1_deg / e1",
                   "metric_kink": "the global SPH h(P) = max distance / 1.98 is not differentiable inside the "
                                  "finite-difference stencil (the farthest document changes; with corner "
-                                 "anchors this is the lines x = 0 and y = 0): g is an average of one-sided "
-                                 "derivatives, moves O(delta) with delta, and its eigen-directions should not "
-                                 "be interpreted"},
+                                 "anchors this is the lines x = 0 and y = 0): the central difference tends to "
+                                 "the mean of the one-sided derivatives and g is built from inner products of "
+                                 "that mean, which in general differs from the mean of the one-sided metrics; "
+                                 "g moves O(delta) with delta and its eigen-directions should not be interpreted"},
         "eigen_summary": {"lam2_clipped_points": int(F["clipped"].sum()),
                           "lam2_raw_min": float(F["lam_raw"][:, 1].min()),
                           "e1_ill_defined_points": int(F["ill"].sum()),
