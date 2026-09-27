@@ -615,7 +615,7 @@ print(LensWords(["xyz "], [], docs, meta).lens_words([("xyz", 0)])[0]["term"])
 class TestWordTies:
     def test_representative_word_tie_is_broken_alphabetically(self):
         # "alphxyz" and "betaxyz" end in "xyz", occur in the same single document and have the
-        # same length: a tie that make_evidence.py leaves to Python's string-hash order
+        # same length: a tie that the old make_evidence.py left to Python's string-hash order
         docs = [{"text": "betaxyz alphxyz gammaword"}, {"text": "deltaword"}]
         lens = grid_scan.LensWords(["xyz "], [], docs, [{"title": "a"}, {"title": "b"}])
         assert lens.lens_words([("xyz", 0)]) == [{"term": "alphxyz", "df": 1,

@@ -8,7 +8,8 @@ numpy のソート実装 (版や CPU で変わる) に結果を依存させな�
   n-gram    スコアの降順。完全に同じスコアは特徴番号 (vocab の列番号) の昇順。上位
             CANDIDATE_POOL 件の境界にかかる同点も同じ規則で選ぶので、候補集合は一意に決まる。
   寄与文献  重みの降順。完全に同じ重みは doc_id の昇順。
-  代表語    含む文献の数が最も多い語。併合した項目では次に短い語。最後は辞書順 (コードポイント順)。
+  代表語    含む文献の数が最も多い語、同数なら短い語、最後は辞書順 (コードポイント順)。語の併合を
+            判定するときの各 n-gram の代表は、文献数のあと辞書順。
   語形      含む文献の数の降順、同数は辞書順で、最大 MAX_WORD_FORMS 個。
   出典文献  doc_id の昇順。
 スコアの定義 (L2・L1 レンズ)、語フィルタ (kmlib.term_ok)、部分文字列の重複除去、語の併合規則は
@@ -27,6 +28,8 @@ _WORD_RE = re.compile(r"[a-z][a-z\-]{2,}")
 
 def _scores(values):
     s = np.asarray(values)
+    if s.dtype.kind in "biu":               # 符号なし整数や bool は符号反転で壊れるので実数にしてから並べる
+        s = s.astype(np.float64)
     if s.ndim != 1 or s.size == 0:
         raise ValueError(f"expected a non-empty 1-D vector of scores, got shape {s.shape}")
     if not np.isfinite(s).all():

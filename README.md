@@ -165,7 +165,7 @@ and not as the fragment `ompto`.
 Which words and documents are chosen no longer depends on Python's string
 hashing or on numpy's order for equal values: exactly equal n-gram scores are
 taken in feature-index order, equal document weights in `doc_id` order, and
-words with equal document counts alphabetically (`code/evidence_lib.py`, shared
+words by document count, then length, then alphabetically (`code/evidence_lib.py`, shared
 with `grid_scan.py`). This makes the selection reproducible for identical
 scores; it does not remove environment differences in the scores themselves.
 Packages made before this rule can differ wherever values tie; the numbers do
@@ -259,7 +259,7 @@ data/
 docs/
   USAGE_ja.md         detailed walkthrough (Japanese)
   verbalization_protocol.md      the binding protocol for the verbalization step
-  example_evidence_point.json    what make_evidence.py produces, for reference
+  example_evidence_point.json    what make_evidence.py produces (format example, made before the tie rules)
   postprocessing_ja.md           guide to the post-processing tools (Japanese)
   intake_2026-09_coauthor_tools.md  what was taken from the co-author's archives, and why
 tests/                pytest suite; synthetic data only, no corpus text

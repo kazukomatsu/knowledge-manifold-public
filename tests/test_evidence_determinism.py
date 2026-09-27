@@ -5,7 +5,8 @@ scores or weights, or on a vocabulary of at least 1500 n-grams.
 The tie rules, stated here independently of the code:
   n-grams                 score descending, exactly equal scores by feature index ascending
   contributing documents  weight descending, exactly equal weights by doc_id ascending
-  representative word     most documents (then shortest, for a merged term), then alphabetical
+  representative word     most documents, then shortest, then alphabetical (the per-n-gram
+                          representative that decides merges: most documents, then alphabetical)
   word forms              most documents, then alphabetical
   source documents        doc_id ascending
 Synthetic runs only (tests/synthetic_run.py); no corpus text.
@@ -136,6 +137,10 @@ class TestTopIndices:
         with pytest.raises(ValueError):
             lib.top_indices(bad, 1)
 
+    def test_integer_and_boolean_scores(self, lib):
+        assert lib.top_indices(np.array([1, 2, 2, 0], dtype=np.uint8), 4).tolist() == [1, 2, 0, 3]
+        assert lib.top_indices(np.array([False, True, True]), 2).tolist() == [1, 2]
+
     def test_rejects_a_non_positive_count(self, lib):
         with pytest.raises(ValueError):
             lib.top_indices(np.ones(3), 0)
@@ -193,6 +198,11 @@ class TestWordResolver:
         docs = [{"text": "pqrsab pqrsac"}, {"text": "pqrsab pqrsac"}]
         r = lib.WordResolver([" pqrs"], docs)
         assert r.resolve([("pqrs", 0)])[0]["term"] == "pqrsab"
+
+    def test_shorter_word_beats_the_alphabet_for_every_term(self, lib):
+        # one n-gram, no merge: bxyz and abcxyz both in one document; the shorter wins over the alphabet
+        got = lib.WordResolver(["xyz "], [{"text": "abcxyz bxyz"}]).resolve([("xyz", 0)])[0]
+        assert got["term"] == "bxyz" and got["word_forms"] == ["abcxyz", "bxyz"]
 
     def test_ties_are_broken_alphabetically_not_by_document_order(self, lib):
         # pqrszz comes first in the documents, pqrsaa first in the alphabet; same df, same length

@@ -22,7 +22,7 @@ on the published numbers, are in [`CORRECTIONS.md`](CORRECTIONS.md).
   |---|---|
   | n-grams | score descending; exactly equal scores by feature index ascending; the candidate pool is cut by the same order, so it is unique |
   | contributing documents | weight descending; exactly equal weights by `doc_id` ascending |
-  | representative word | most documents (then shortest, for a merged term), then alphabetical |
+  | representative word | most documents, then shortest, then alphabetical (the per-n-gram representative that decides whether entries merge: most documents, then alphabetical) |
   | word forms | most documents, then alphabetical, at most four |
   | source documents | `doc_id` ascending |
 
@@ -34,6 +34,9 @@ on the published numbers, are in [`CORRECTIONS.md`](CORRECTIONS.md).
   `--topk` below 1 are errors with a reason. The fixed pools of `13_llm_export.py`
   (600) and of the post-processing consistency check (5) no longer index past a
   small vocabulary; their tie order is unchanged.
+- `grid_scan.py` records `code/evidence_lib.py` and `code/term_stoplist.txt` among
+  the hashed code files of its meta, and states the tie rules in
+  `settings.tie_rules` (an added field; `schema_version` stays 1).
 
 ### Changed behaviour — evidence can differ from earlier packages
 
@@ -45,6 +48,7 @@ before (`origin/main` at e0eecc1) and after:
 | | Polymer | J. Informetrics |
 |---|---|---|
 | `grid_scan.py`, 441 points (dx 0.1, 15 + 15 terms): points with any change | 389 | 328 |
+| … points where a term list changed (either lens) | 330 | 255 |
 | … L2 / L1 term lists changed | 251 / 241 | 139 / 187 |
 | … top-10 contributing documents changed | 1 | 5 |
 | … CSV and arrays | identical | identical |

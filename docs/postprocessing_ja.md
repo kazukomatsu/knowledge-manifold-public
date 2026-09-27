@@ -341,7 +341,7 @@ LLM の呼び出しをこれらのツールに組み込むことはしていま�
   |---|---|
   | n-gram | スコアの降順。完全に同じスコアは特徴番号(vocab の列番号。TfidfVectorizer の n-gram の辞書順)の昇順。上位 1500 件の境界にかかる同点も同じ規則で選ぶので、候補集合は一意 |
   | 寄与文献 | 重みの降順。完全に同じ重みは doc_id の昇順 |
-  | 代表語 | 含む文献が最多の語。併合した項目では次に短い語。最後は辞書順 |
+  | 代表語 | 含む文献が最多の語、同数なら短い語、最後は辞書順(語の併合を判定するときの各 n-gram の代表は、文献数のあと辞書順) |
   | 語形(`word_forms`) | 含む文献の数の降順、同数は辞書順で最大 4 つ |
   | 出典文献 | doc_id の昇順 |
 
@@ -375,9 +375,11 @@ LLM の呼び出しをこれらのツールに組み込むことはしていま�
 | `scan/kmlib.py`, `scan/term_stoplist.txt` | 使わない | repo の `code/kmlib.py`(CORRECTIONS.md #4 の安定ソートを含む)と `code/term_stoplist.txt`(同一内容)を使う |
 | `scan/README_scangrid.md` | 本書 | |
 
-数値への影響: dx = 0.1 の走査では、原作と新版の出力は同じ環境で CSV の共通 35 列(空欄の
-`verbalization_50w` を含む)が全点で文字列一致し、details.json も全点一致しました(Polymer・
-J. Informetrics の両 run)。再クラスタリングはラベル・CSV・gnuplot データがバイト一致、
+数値への影響: dx = 0.1 の走査では、原作と新版(PR #1 の時点)の出力は同じ環境で CSV の共通 35 列
+(空欄の `verbalization_50w` を含む)が全点で文字列一致し、details.json も全点一致しました(Polymer・
+J. Informetrics の両 run)。その後の同点規則(2026-09-26、第 7 節)で、details.json のレンズ語・
+df・出典文献・寄与文献 top10 は同点の所で原作と異なるようになりました(件数は CHANGELOG.md。
+CSV と npz の数値は変わらない)。再クラスタリングはラベル・CSV・gnuplot データがバイト一致、
 `clusters_k{K}.json` も一致(k = 4〜7)。候補一覧も一致します。変わったのは追加した列・
 ファイル・図の画素位置と、lam2 ≤ 0 の点の表記(第 3 節。両 run に該当点なし)です。CSV の
 改行は `grid_scan.py` と `recluster.py` が原作どおり CRLF、`add_cluster_to_csv.py` が入力と

@@ -425,7 +425,8 @@ def main(argv=None):
              dirgrad=F["dirgrad"], lam_gap_rel=F["gap_rel"], e1_ill_defined=F["ill"],
              lam2_clipped=F["clipped"], metric_kink=F["kink"])
     u = F["u_RBF"], F["u_M32"]
-    code_files = [os.path.abspath(__file__), os.path.join(CODE, "kmlib.py"), os.path.join(CODE, "postproc_lib.py")]
+    code_files = [os.path.abspath(__file__), os.path.join(CODE, "kmlib.py"), os.path.join(CODE, "postproc_lib.py"),
+                  os.path.join(CODE, "evidence_lib.py"), os.path.join(CODE, "term_stoplist.txt")]
     meta_out = {
         "tool": "grid_scan.py", "schema_version": 1,
         "grid": {"range": [-1, 1], "dx": spacing, "dx_requested": a.dx, "n_per_axis": len(xs),
@@ -446,8 +447,9 @@ def main(argv=None):
                               f"candidate pool {CANDIDATE_POOL} n-grams (or the vocabulary size if smaller)"
                               if words else None),
                      "tie_rules": ("n-grams by score descending then feature index ascending; contributing "
-                                   "documents by weight descending then doc_id ascending; words by document "
-                                   "count, then length (merged terms), then alphabetically" if words else None),
+                                   "documents by weight descending then doc_id ascending; representative words "
+                                   "by document count, then length, then alphabetically; word forms by document "
+                                   "count then alphabetically; source documents by doc_id" if words else None),
                      "readout_note": "all fields use the global SPH rule; make_evidence.py defaults to the "
                                      "LOO-selected readout tier, so compare with --readout global"},
         "tolerances": {"prob_sum_atol": PROB_SUM_ATOL, "eig_neg_rtol": EIG_NEG_RTOL,
