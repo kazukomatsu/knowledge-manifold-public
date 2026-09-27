@@ -171,11 +171,12 @@ def check_run(out, P, Z=None, G=None, gpr=None, X=None, l2n=None, vocab=None, do
         res[key] = "ok"
     else:
         res[key] = "not available"
-    key = f"docs_clean.json contains each document's top {TOP_NGRAMS_CHECKED} n-grams of X_raw.npy"
+    key = f"docs_clean.json contains each document's top {TOP_NGRAMS_CHECKED} n-grams of X_raw.npy"   # 語彙数まで
     if X is not None and docs is not None and vocab is not None:
         for i, d in enumerate(docs):
             text = " " + " ".join(d["text"].split()) + " "      # char_wb は語の前後を空白で埋めて切る
-            top = np.argpartition(X[i], -TOP_NGRAMS_CHECKED)[-TOP_NGRAMS_CHECKED:]
+            m = min(TOP_NGRAMS_CHECKED, X.shape[1])
+            top = np.argpartition(X[i], -m)[-m:]
             if any(X[i, j] > 0 and vocab[j] not in text for j in top):
                 raise ArtifactError(f"docs_clean.json entry {i} does not contain the highest-weighted "
                                     f"n-grams of document {i} in X_raw.npy (text of another run?)")

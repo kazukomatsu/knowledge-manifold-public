@@ -57,7 +57,7 @@ scikit-learn 1.7.2 / matplotlib 3.10.9. On that unpinned stack (verified
 ```bash
 python3.10 -m venv .venv310 && source .venv310/bin/activate
 pip install numpy scipy scikit-learn matplotlib pytest   # no pinning possible
-python3 -m pytest tests/ -v            # 118 passed (2026-09-26; 35 before the post-processing tests)
+python3 -m pytest tests/ -v            # all pass; the CI job on this stack gives the current count
 python3 code/verify_reference.py       # ALL 28 METRICS REPRODUCED
 ```
 
@@ -162,6 +162,16 @@ Terms in the package are whole words, deterministically reconstructed from the
 corpus text rather than raw character n-grams, so `compton` arrives as a word
 and not as the fragment `ompto`.
 
+Which words and documents are chosen no longer depends on Python's string
+hashing or on numpy's order for equal values: exactly equal n-gram scores are
+taken in feature-index order, equal document weights in `doc_id` order, and
+words by document count, then the shorter, then alphabetically (`code/evidence_lib.py`, shared
+with `grid_scan.py`). This makes the selection reproducible for identical
+scores; it does not remove environment differences in the scores themselves.
+Packages made before this rule can differ wherever values tie; the numbers do
+not change. A vocabulary smaller than the 1500-candidate pool is handled, and
+fewer than `--topk` terms are returned when the candidates run out.
+
 ### Post-processing a finished run
 
 Four tools work on a completed run without re-running the pipeline or touching
@@ -241,6 +251,7 @@ code/                 the pipeline; numbered scripts run in order, kmlib.py is s
   recluster.py              post-processing: re-cluster a finished run at other k
   grid_scan.py, grid_viz.py post-processing: full grid scan of a finished map, heat maps
   postproc_lib.py           shared input checks for the four post-processing tools
+  evidence_lib.py           how evidence words and documents are chosen, ties included (make_evidence.py, grid_scan.py)
 data/
   corpus_manifest.csv 100 DOIs, titles, years, clusters, map coordinates
   derived/            Gram matrix, coordinates, SVD scores, reference metric JSONs
@@ -248,7 +259,7 @@ data/
 docs/
   USAGE_ja.md         detailed walkthrough (Japanese)
   verbalization_protocol.md      the binding protocol for the verbalization step
-  example_evidence_point.json    what make_evidence.py produces, for reference
+  example_evidence_point.json    what make_evidence.py produces (format example, made before the tie rules)
   postprocessing_ja.md           guide to the post-processing tools (Japanese)
   intake_2026-09_coauthor_tools.md  what was taken from the co-author's archives, and why
 tests/                pytest suite; synthetic data only, no corpus text
@@ -306,6 +317,12 @@ k=5 partition recovered from `data/derived`, the 441- and 1681-point grids
 one-to-one across CSV, details and arrays, the metric-tensor identities and a
 finite-distance check, the kink flag, byte-identical reruns under different
 `PYTHONHASHSEED`, and agreement with `make_evidence.py` at matched settings.
+`tests/test_evidence_determinism.py` pins the tie rules of the evidence
+selection: ties across the candidate-pool boundary, a literal expected answer
+that every numpy build must reproduce, equality with a full stable ordering on
+tie-heavy vectors and with the old order where there are no ties, the word and
+document tie rules, identical packages under six hash seeds, and vocabularies
+of 40, 800 and 1500 n-grams.
 
 CI runs the suite on Python 3.11 and additionally asserts that no corpus-derived
 file has been committed.
