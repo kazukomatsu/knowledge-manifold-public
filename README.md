@@ -165,7 +165,7 @@ and not as the fragment `ompto`.
 Which words and documents are chosen no longer depends on Python's string
 hashing or on numpy's order for equal values: exactly equal n-gram scores are
 taken in feature-index order, equal document weights in `doc_id` order, and
-words by document count, then length, then alphabetically (`code/evidence_lib.py`, shared
+words by document count, then the shorter, then alphabetically (`code/evidence_lib.py`, shared
 with `grid_scan.py`). This makes the selection reproducible for identical
 scores; it does not remove environment differences in the scores themselves.
 Packages made before this rule can differ wherever values tie; the numbers do

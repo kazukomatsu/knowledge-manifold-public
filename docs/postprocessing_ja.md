@@ -380,7 +380,7 @@ LLM の呼び出しをこれらのツールに組み込むことはしていま�
 J. Informetrics の両 run)。その後の同点規則(2026-09-26、第 7 節)で、details.json のレンズ語・
 df・出典文献・寄与文献 top10 は同点の所で原作と異なるようになりました(件数は CHANGELOG.md。
 CSV と npz の数値は変わらない)。再クラスタリングはラベル・CSV・gnuplot データがバイト一致、
-`clusters_k{K}.json` も一致(k = 4〜7)。候補一覧も一致します。変わったのは追加した列・
+`clusters_k{K}.json` も一致(k = 4〜7)。候補一覧も一致します。PR #1 の時点で変わったのは追加した列・
 ファイル・図の画素位置と、lam2 ≤ 0 の点の表記(第 3 節。両 run に該当点なし)です。CSV の
 改行は `grid_scan.py` と `recluster.py` が原作どおり CRLF、`add_cluster_to_csv.py` が入力と
 同じ LF です。

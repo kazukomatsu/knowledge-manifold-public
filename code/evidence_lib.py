@@ -38,7 +38,11 @@ def _scores(values):
 
 
 def top_indices(values, n):
-    """値の大きい順に n 個の番号 (同じ値は番号の小さい順). 全体を並べた先頭 n 個と一致する."""
+    """値の大きい順に n 個の番号 (同じ値は番号の小さい順). 全体を並べた先頭 n 個と一致する.
+
+    値は実数として比べる。整数・bool は float64 にしてから並べるので、2**53 を超える整数どうしは
+    区別できないことがある (呼び出し側はどれも float64 のスコアか重みを渡す)。
+    """
     s = _scores(values)
     if n < 1:
         raise ValueError(f"the number of items must be at least 1, got {n}")

@@ -448,7 +448,7 @@ def main(argv=None):
                               if words else None),
                      "tie_rules": ("n-grams by score descending then feature index ascending; contributing "
                                    "documents by weight descending then doc_id ascending; representative words "
-                                   "by document count, then length, then alphabetically; word forms by document "
+                                   "by document count, then the shorter, then alphabetically; word forms by document "
                                    "count then alphabetically; source documents by doc_id" if words else None),
                      "readout_note": "all fields use the global SPH rule; make_evidence.py defaults to the "
                                      "LOO-selected readout tier, so compare with --readout global"},

@@ -218,6 +218,14 @@ class TestWordResolver:
         got = lib.WordResolver(["dq ", " abcd "], docs).resolve([("dq", 0), ("abcd", 1)])
         assert got == [{"term": "abcd", "word_forms": ["abcd", "abcdq", "zzzdq"], "docs": [0, 1, 2]}]
 
+    def test_merge_decision_ignores_length(self, lib):
+        # "xyz " is in abcdxyz (doc 0) and bxyz (doc 1): the n-gram's representative for the merge
+        # test is abcdxyz (documents, then alphabet — not the shorter bxyz), which starts with the
+        # word "abcd" of the second n-gram, so the two merge; the merged term is then the shortest
+        docs = [{"text": "abcdxyz"}, {"text": "bxyz"}, {"text": "abcd"}]
+        got = lib.WordResolver(["xyz ", " abcd "], docs).resolve([("xyz", 0), ("abcd", 1)])
+        assert got == [{"term": "abcd", "word_forms": ["abcd", "abcdxyz", "bxyz"], "docs": [0, 1, 2]}]
+
     def test_fragment_without_a_containing_word(self, lib):
         r = lib.WordResolver(["qqqq"], WORD_DOCS)
         assert r.resolve([("qqqq", 0)]) == [{"term": "qqqq", "word_forms": [], "docs": []}]
